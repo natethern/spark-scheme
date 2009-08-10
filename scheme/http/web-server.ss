@@ -19,7 +19,8 @@
 ;; (Electronic mail: vijay.the.schemer@gmail.com)
 
 ;; TODO: 
-;;  * Implement session timeout. (see sessions-gc-proc).
+;;  * Test session timeout.
+;;  * Is the (sleep 0) required in the listener loop?
 ;;  * Implement timeout for service threads.
 
 
@@ -41,10 +42,8 @@
 	 (define-struct web-server-s (configuration
 				      resource-loader
 				      sessions
-				      sessions-gc-thread
 				      server-socket
-				      log-port))
-	 
+				      log-port))	 
 
 	 ;; (list) -> web-server
 	 ;; Creates a new web-server object. The list argument
@@ -68,7 +67,7 @@
 	     (let ((self (make-web-server-s (make-default-conf)
 					    (loader::resource-loader)
 					    (make-hash-table 'equal)
-					    null null 
+					    null 
 					    log-port)))		  
 	       (while (not (null? conf))
 		      (web-server-configuration! self
@@ -92,25 +91,32 @@
 	    ((self)
 	     (web-server-start self (lambda () #t)))
 	    ((self condition-check-proc)
-	     (let ((server-socket (web-server-s-server-socket self))
-		   (timeout-secs (web-server-configuration self 'timeout))
-		   (session-gc-thread 
-		    (thread (lambda () 
-			      (let loop ()
-				(sessions-gc-proc self)
-				(loop))))))
-	       (set-web-server-s-sessions-gc-thread! self session-gc-thread)
+	     (let* ((server-socket (web-server-s-server-socket self))
+		    (timeout-secs (web-server-configuration self 'timeout))
+		    (last-check-secs (current-seconds))
+		    (session-timeout-secs (web-server-configuration 
+					   self 'session-timeout))
+		    (sess-check-proc
+		     (lambda ()
+		       (let ((cs (current-seconds)))
+			 (cond 
+			  ((> (- cs last-check-secs)
+			      session-timeout-secs)			   
+			   (thread (lambda ()
+				     (sessions-gc-check self cs 
+							session-timeout-secs)))
+			   (set! last-check-secs cs)
+			   (sleep 0)))))))
 	       (socket-listen server-socket)
 	       (while (condition-check-proc)
 		      (let ((conn (socket-accept server-socket)))
 			(thread (lambda () (on-client-connect self conn)))
+			(sess-check-proc)
 			;; Just to context switch.
 			(sleep 0)))))))
 
 	 (define (web-server-stop self)
-	   (socket-close (web-server-s-server-socket self))
-	   (if (not (null? (web-server-s-sessions-gc-thread self)))
-	       (kill-thread (web-server-s-sessions-gc-thread self))))
+	   (socket-close (web-server-s-server-socket self)))
 
 	 (define (web-server-socket self)
 	   (web-server-s-server-socket self))
@@ -244,19 +250,16 @@
 		   (fprintf port "~n")
 		   (flush-output port)))))
 
-	 ;; Makes timedout sessions available for garbage collection.
-	 (define (sessions-gc-proc self)
-	   (let ((session-timeout-secs
-		  (web-server-configuration self 'session-timeout)))
-	     (let ((sessions (web-server-s-sessions self))
-		   (gc-session-ids (list)))
-	       (hash-table-for-each 
-		sessions
-		(lambda (id session)
-		  (let ((diff (- (current-seconds)
-				 (session::session-last-access session))))
-		    (if (>= diff session-timeout-secs)
-			(set! gc-session-ids (cons id gc-session-ids))))))
-	       (for id in gc-session-ids
-		    (session::session-destroy id sessions))))))
+	 (define (sessions-gc-check self curr-secs
+				    session-timeout-secs)
+	   (let ((sessions (web-server-s-sessions self))
+		 (gc-session-ids (list)))
+	     (hash-table-for-each 
+	      sessions
+	      (lambda (id session)
+		(if (> (- curr-secs (session::session-last-access session))
+		       session-timeout-secs)		    
+		    (set! gc-session-ids (cons id gc-session-ids)))))
+	     (for id in gc-session-ids
+		  (session::session-destroy id sessions)))))
 	       

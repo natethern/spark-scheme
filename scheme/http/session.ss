@@ -44,13 +44,11 @@
 					(make-hash-table 'equal)
 					(current-seconds)))
 		  (id (session-s-id sess)))
-	     (atomic
-	      (hash-table-put! sessions id sess))
+	     (hash-table-put! sessions id sess)
 	     id))
 
 	 (define (session-destroy id sessions)
-	   (atomic
-	    (hash-table-remove! sessions id)))
+	   (hash-table-remove! sessions id))
 	 
 	 (define (session-execute-procedure url procs 
 					    sess-id
@@ -74,12 +72,8 @@
 		 (cons 'next res-html)))))
 
 	 (define (next-session-id)
-	   (let ((id 0))
-	     (atomic "*session-id*" 
-		     (begin
-		       (set! *session-id* (add1 *session-id*))
-		       (set! id *session-id*)))
-	     id))
+	   (set! *session-id* (add1 *session-id*))
+	   *session-id*)
 
 	 (define (find-session id url sessions)
 	   (if (= id -1) 
