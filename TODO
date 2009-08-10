@@ -1,6 +1,4 @@
-08-AUG-2009
+09-AUG-2009
 
-* Test and fix webserver. (see TODO in web-server.ss)
-* Make sure (string-find) calls reflects changes to the implementation
-   of that procedure.
+* See TODO in web-server.ss
 
