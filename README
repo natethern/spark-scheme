@@ -1,9 +1,18 @@
 README
 ======
 
-Spark (1.0-alpha) for GNU/Linux. 
-Spark is distributed under GPLv3.
-See COPYING for more information.
+Spark is an expressive, dynamic programming language based 
+on the [WWW]Scheme language specification. It is derived from MzScheme. 
+Spark is a reflective, multi-paradigm language with strong support 
+for explorative programming. On top of its functional core you can 
+write programs in imperative, object-oriented or just about any style 
+you like. Spark adds a whole new dimension to distributed computing
+with ''concurrent objects'' and message passing. 
+It is easy to learn and facilitates writing concise, correct programs. 
+
+Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
+
+Spark is distributed under GPLv3. See COPYING for more information.
 
 
 INSTALL
