@@ -40,7 +40,7 @@
  (try
   (raise-unknown)
   (catch ex)
-  (finally (lambda () 4))))
+  (finally (printf "finally done.~n"))))
 
 (define (for-test-1)
  (let ((ret (list)))
@@ -76,7 +76,7 @@
  (run-test "(try-catch-test-1)" (try-catch-test-1) 1)
  (run-test "(try-catch-test-2)" (try-catch-test-2) 2)
  (run-test "(try-catch-test-3)" (try-catch-test-3) -1)
- (run-test "(try-catch-finally-test)" (try-catch-finally-test) 4)
+ (run-test "(try-catch-finally-test)" (try-catch-finally-test) -1)
 
  (run-test "(range 10)" (range 10) (list 0 1 2 3 4 5 6 7 8 9))
  (run-test "(range -10)" (range -10) ())

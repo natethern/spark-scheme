@@ -18,29 +18,38 @@
 ;; information or have any questions.
 ;; (Electronic mail: vijay.the.schemer@gmail.com)
 
-;; try-catch-finally
-
 (module spark-lang-ext mzscheme
 
 	(require library-manager)
 
+	;; try-catch-finally
 	(define-syntax try
 	  (syntax-rules (catch finally)
 	    ((_ try-body ... (catch catch-proc))
-	     (with-handlers ((void (lambda (ex) (catch-proc ex))))
+	     (with-handlers (((lambda (ex) #t)
+			      (lambda (ex) 
+				(catch-proc ex))))
 			    (begin
 			      try-body ...)))
-	    ((_ try-body ... (catch catch-proc) (finally fin-proc))
-	     (with-handlers ((void (lambda (ex) 
-				     (with-handlers ((void (lambda (inner-ex)
-							     (fin-proc)
-							     (raise inner-ex))))
-						    (catch-proc ex) 
-						    (fin-proc)))))
-			    (begin
-			      try-body ...
-			      (fin-proc))))))
+	    ((_ try-body ... (catch catch-proc) (finally fin-body ...))
+	     (dynamic-wind
+		 (lambda () ())
 
+		 (lambda ()
+		   (with-handlers (((lambda (ex) #t)
+				    (lambda (ex) 
+				      (catch-proc ex))))
+				  (begin
+				    try-body ...)))
+		 
+		 (lambda () fin-body ...)))
+	    ((_ try-body ... (finally fin-body ...))
+	     (dynamic-wind
+		 (lambda () ())
+		 
+		 (lambda () try-body ...)
+		 
+		 (lambda () fin-body ...)))))
 	;; :~
 
 	;; while loop
@@ -114,16 +123,15 @@
 	       (semaphore-post __sema__)))
 	    ((atomic name block)
 	     (let ((sema (hash-table-get __sema_map__ name null)))
-	       (cond
-		((null? sema)
-		 (set! sema (make-semaphore 1))
-		 (semaphore-wait __sema_map_lock__)
-		 (hash-table-put! __sema_map__ name sema)
-		 (semaphore-post __sema_map_lock__)))
+	       (cond ((null? sema)
+		      (set! sema (make-semaphore 1))
+		      (semaphore-wait __sema_map_lock__)
+		      (hash-table-put! __sema_map__ name sema)
+		      (semaphore-post __sema_map_lock__)))
 	       (semaphore-wait sema)
 	       block
 	       (semaphore-post sema)))))	
-
+	
 	(provide try
 		 while
 		 for

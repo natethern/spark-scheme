@@ -37,4 +37,4 @@
 (try
  (check-string "ok") ;; another exception
  (catch exception-handler)
- (finally after-all))
+ (finally (after-all)))

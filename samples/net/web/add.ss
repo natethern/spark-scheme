@@ -21,10 +21,10 @@
        (fcgi-send req (get-output-string out))))
    (catch (lambda (ex)
 	    (printf "Error: ~a~n" ex)))
-   (finally (lambda ()
-	      (printf "Closing client resources.~n") (flush-output)
-	      (acceptor-remove-watch acceptor client-socket 'for-read)
-	      (socket-close client-socket)))))
+   (finally 
+    (printf "Closing client resources.~n") (flush-output)
+    (acceptor-remove-watch acceptor client-socket 'for-read)
+    (socket-close client-socket))))
 
 (define (on-server-timeout acceptor)
   (printf "Waiting for client, timedout.~n")

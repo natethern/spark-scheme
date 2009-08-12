@@ -28,12 +28,13 @@
  (a null)
  (b null)
  (catch handle-exception)
- (finally do-this-always))
+ (finally (do-this-always)))
 
 (try
- (a null)
- (catch (lambda (x) (raise "catch")))
- (finally (lambda () (display "any way ...!") (newline))))
-	
-
-(print "OK") (newline)
+ (try
+  (a null)
+  (catch (lambda (x) (raise "nested exception")))
+  (finally 
+   (display "any way ...!") 
+   (newline)))
+ (catch (lambda (ex) (printf "Caught ~a.~n" ex) #t)))
