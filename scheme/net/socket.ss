@@ -33,7 +33,8 @@
 		socket-send-bytes socket-send-bytes-to socket-option! 
 		socket-option socket-close socket-non-blocking!
 		socket-async-io! socket-non-blocking? socket-async-io?
-		socket-handle socket-handle!)
+		socket-handle socket-handle!
+		connection-socket connection-address)
 
 	;; Represents the memory layout of a network socket.
 	(define-struct socket-s (handle))
@@ -123,7 +124,7 @@
 		#t))))
 
 	;; Accepts a new client connection.
-	;; Returns a list that has two elements:
+	;; Returns a pair whose elements are:
 	;; 1. A socket object that represents the connection.
 	;; 2. A address object that contains the connect information
 	;; of the client.
@@ -138,7 +139,13 @@
 	    (set! rest (cdr r))
 	    (if (not (eqv? rest null))
 		(set! client-addr (list->address (car rest))))
-	    (list client-sock client-addr)))
+	    (cons client-sock client-addr)))
+
+	(define (connection-socket conn)
+	  (car conn))
+	
+	(define (connection-address conn)
+	  (cdr conn))
 
 	;; Receives the given number of characters from a socket.
 	;; The return value is a string.

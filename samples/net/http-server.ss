@@ -6,7 +6,7 @@
 (socket-open server-socket)
 (socket-bind server-socket addr #t)
 (socket-listen server-socket)
-(define client-socket (car (socket-accept server-socket)))
+(define client-socket (connection-socket (socket-accept server-socket)))
 (print (socket-recv client-socket 1024)) (newline)
 (socket-send client-socket "<html><body>Hello World!</body></html>")
 (socket-close client-socket)

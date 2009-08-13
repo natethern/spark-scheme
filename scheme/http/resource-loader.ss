@@ -87,8 +87,10 @@
 
 	 (define (find-res-type uri script-ext)
 	   (let ((ext (filename-extension uri)))
-	     (if (bytes=? ext script-ext)
-		 'script
+	     (if (bytes? ext)
+		 (if (bytes=? ext script-ext)
+		     'script
+		     'file)
 		 'file)))
 
 	 (define (parse-uri uri)

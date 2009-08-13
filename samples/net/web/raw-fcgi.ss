@@ -9,7 +9,7 @@
 (socket-bind server-socket addr #t)
 (socket-listen server-socket)
 (define s (socket-accept server-socket))
-(define client-socket (car s))
+(define client-socket (connection-socket s))
 
 (define req (spark.fcgi::recv (socket-handle client-socket)))
 (printf "request-id: ~a~n" (spark.fcgi::fcgi-request-id req))
