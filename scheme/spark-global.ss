@@ -18,6 +18,8 @@
 ;; information or have any questions.
 ;; (Electronic mail: vijay.the.schemer@gmail.com)
 
+;; Adapted from http://community.schemewiki.org/?amb
+ 
 ;; backtracking.
 
 (define amb-fail
