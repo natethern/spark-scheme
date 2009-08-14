@@ -1,3 +1,5 @@
+(import (aura))
+
 (define (get-num1 new-uri state)
   (let ((html (sgml `(html
 		      (body

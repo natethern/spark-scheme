@@ -1,8 +1,6 @@
 (import (net)
-	(reactor)
-	(http)
-	(aura))
-
+	(http))
+	
 (define httpd (web-server (list 'port 8080
 				'session-timeout (* 2 60))))
 

@@ -1,3 +1,5 @@
+(import (aura))
+
 (define (hello new-url state)
     (let ((html (sgml `(html
 		      (body
