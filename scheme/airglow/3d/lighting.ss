@@ -1,5 +1,5 @@
 ;; Light functions.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,8 +30,9 @@
 		 3d-light-spot-direction 3d-light-spot-exponent
 		 3d-light-spot-cutoff 3d-light-linear-attenuation
 		 3d-light-quadratic-attenuation 3d-light-constant-attenuation
-		 3d-color 3d-color-ub 3d-blend-f 3d-enable-blending 3d-color-mask
-		 3d-index 3d-logic-op 3d-color-material 3d-material)
+		 3d-color 3d-color-ub 3d-blend-f 3d-enable-blending 
+		 3d-color-mask 3d-index 3d-logic-op 
+		 3d-color-material 3d-material)
 
 	 (define (3d-enable-lighting flag)
 	   (if flag
@@ -50,42 +51,42 @@
 	 ;; default to 0.0
 	 (define (3d-light-ambient id . args)
 	   (if (not (null? args))
-	       (begin
-		 (let ((params (get-light-rgba-params args)))
-		   (3d-light-f id spark.opengl::GL-AMBIENT params)))
-	       (raise-exception "3d-light-ambient" "Null params." 'contract)))
+	       (let ((params (get-light-rgba-params args)))
+		 (3d-light-f id spark.opengl::GL-AMBIENT params))
+	       (raise-exception "3d-light-ambient" "Null params." 
+				'contract)))
 
 	 (define (3d-light-diffuse id . args)
 	   (if (not (null? args))
-	       (begin
-		 (let ((params (get-light-rgba-params args)))
-		   (3d-light-f id spark.opengl::GL-DIFFUSE params)))
-	       (raise-exception "3d-light-diffuse" "Null params." 'contract)))
+	       (let ((params (get-light-rgba-params args)))
+		 (3d-light-f id spark.opengl::GL-DIFFUSE params))
+	       (raise-exception "3d-light-diffuse" "Null params." 
+				'contract)))
 
 	 (define (3d-light-specular id . args)
 	   (if (not (null? args))
-	       (begin
-		 (let ((params (get-light-rgba-params args)))
-		   (3d-light-f id spark.opengl::GL-SPECULAR params)))
-	       (raise-exception "3d-light-specular" "Null params." 'contract)))
+	       (let ((params (get-light-rgba-params args)))
+		 (3d-light-f id spark.opengl::GL-SPECULAR params))
+	       (raise-exception "3d-light-specular" "Null params." 
+				'contract)))
 
 	 ;; params is a list of 4 real values.
 	 (define (3d-light-position id params)
 	   (if (not (null? params))
-	       (begin
-		 (if (not (= (length params) 4))
-		     (raise-exception "3d-light-position" "Null params." 'contract)
-		     (3d-light-f id spark.opengl::GL-POSITION params)))
-	       (raise-exception "3d-light-diffuse" "Null params." 'contract)))
+	       (if (not (= (length params) 4))
+		   (raise-exception "3d-light-position" "Null params." 'contract)
+		   (3d-light-f id spark.opengl::GL-POSITION params))
+	       (raise-exception "3d-light-diffuse" "Null params." 
+				'contract)))
 
 	 ;; params is a list of 3 real values.
 	 (define (3d-light-spot-direction id params)
 	   (if (not (null? params))
-	       (begin
-		 (if (not (= (length params) 3))
-		     (raise-exception "3d-light-spot-direction" "Null params." 'contract)
-		     (3d-light-f id spark.opengl::GL-SPOT-DIRECTION params)))
-	       (raise-exception "3d-light-spot-direction" "Null params." 'contract)))
+	       (if (not (= (length params) 3))
+		   (raise-exception "3d-light-spot-direction" "Null params." 'contract)
+		   (3d-light-f id spark.opengl::GL-SPOT-DIRECTION params))
+	       (raise-exception "3d-light-spot-direction" "Null params." 
+				'contract)))
 
 	 ;; p is a single real number.
 	 (define (3d-light-spot-exponent id p)

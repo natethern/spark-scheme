@@ -1,5 +1,5 @@
 ;; Functions that do matrix transformations in a 3d space.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -136,10 +136,9 @@
 	 (define (matrix-mode->int mode)
 	   (if (integer? mode)
 	       mode
-	       (begin
-		 (case mode
-		   ((modelview) spark.opengl::GL-MODELVIEW)
-		   ((projection) spark.opengl::GL-PROJECTION)
-		   ((texture) spark.opengl::GL-TEXTURE)
-		   (else 0))))))
+	       (case mode
+		 ((modelview) spark.opengl::GL-MODELVIEW)
+		 ((projection) spark.opengl::GL-PROJECTION)
+		 ((texture) spark.opengl::GL-TEXTURE)
+		 (else 0)))))
 

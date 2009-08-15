@@ -1,8 +1,8 @@
 ;; Thanks to Tom Stanis and Jeff Molofee (http://nehe.gamedev.net/) for 
 ;; the animation tutorial and image file.
 
-(require airglow)
-(require airglow-3d)
+(import (airglow))
+(import (airglow-3d))
 
 (define first-time #t)
 (define xrot 2)

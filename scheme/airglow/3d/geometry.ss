@@ -1,5 +1,5 @@
 ;; Geometry functions.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -143,31 +143,28 @@
 	 (define (quadric-drawstyle->integer ds)
 	   (if (integer? ds)
 	       ds
-	       (begin
-		 (case ds
-		   ((fill) spark.opengl::GLU-FILL)
-		   ((line) spark.opengl::GLU-LINE)
-		   ((silhouette) spark.opengl::GLU-SILHOUETTE)
-		   ((point) spark.opengl::GLU-POINT)
-		   (else 0)))))
+	       (case ds
+		 ((fill) spark.opengl::GLU-FILL)
+		 ((line) spark.opengl::GLU-LINE)
+		 ((silhouette) spark.opengl::GLU-SILHOUETTE)
+		 ((point) spark.opengl::GLU-POINT)
+		 (else 0))))
 
 	 (define (quadric-normals->integer n)
 	   (if (integer? n)
 	       n
-	       (begin
-		 (case n
-		   ((none) spark.opengl::GLU-NONE)
-		   ((flat) spark.opengl::GLU-FLAT)
-		   ((smooth) spark.opengl::GLU-SMOOTH)
-		   (else 0)))))
+	       (case n
+		 ((none) spark.opengl::GLU-NONE)
+		 ((flat) spark.opengl::GLU-FLAT)
+		 ((smooth) spark.opengl::GLU-SMOOTH)
+		 (else 0))))
 
 	 (define (quadric-orientation->integer o)
 	   (if (integer? o)
 	       o
-	       (begin
-		 (case o
-		   ((inside) spark.opengl::GLU-INSIDE)
-		   ((outside) spark.opengl::GLU-OUTSIDE)
-		   (else 0))))))
+	       (case o
+		 ((inside) spark.opengl::GLU-INSIDE)
+		 ((outside) spark.opengl::GLU-OUTSIDE)
+		 (else 0)))))
 
 

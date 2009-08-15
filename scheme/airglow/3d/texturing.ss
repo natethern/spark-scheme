@@ -1,5 +1,5 @@
 ;; Texturing.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -63,26 +63,27 @@
 		     (if (null? img-arg)
 			 (set! img-arg image-data))
 		     (if (not (null? img-arg))
-			 (begin
-			   (let ((r (3d-texture-image! self image-w image-h img-arg)))
-			     (if (not (eq? r #t))
-				 (begin
-				   (case r
-				     ((file-open-error)
-				      (raise-exception "3d-texture" "file-open-error" null))
-				     ((image-creation-error)
-				      (raise-exception "3d-texture" "image-creation-error" null))
-				     (else
-				      (raise-exception "3d-texture" "unknown-error" null))))))))
-
+			 (let ((r (3d-texture-image! self image-w image-h img-arg)))
+			   (if (not (eq? r #t))
+			       (case r
+				 ((file-open-error)
+				  (raise-exception "3d-texture" 
+						   "file-open-error" null))
+				 ((image-creation-error)
+				  (raise-exception "3d-texture" 
+						   "image-creation-error" null))
+				 (else
+				  (raise-exception "3d-texture" 
+						   "unknown-error" null))))))
+		     
 		     (if default-params
 			 (begin
 			   (3d-texture-param! self 'min-filter 'linear)
 			   (3d-texture-param! self 'mag-filter 'linear)))
 
 		     (make-texture-s id))
-		   (begin
-		     (raise-exception "3d-texture" "Failed to generate texture." null))))))
+		   (raise-exception "3d-texture" 
+				    "Failed to generate texture." null)))))
 
 	 (define (3d-bind-texture self . args)
 	   (if (not (eq? current-texture (texture-s-id self)))

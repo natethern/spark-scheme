@@ -1,5 +1,5 @@
 ;; 3D rendering utilities.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -60,12 +60,12 @@
 	 ;; the color buffers.  Values specified are clampedto the range [0,1].
 	 (define (3d-clear-color! . colors)
 	   (if (not (eq? colors null))
-	       (begin
-		 (let ((c (car colors)))
-		   (cond
-		    ((vector? c) (clear-color-vec! c))
-		    ((list? c) (clear-color-list! c))
-		    (else (raise-exception "3d-clear-color!" "Expected vector or list" 'contract))))
+	       (let ((c (car colors)))
+		 (cond ((vector? c) (clear-color-vec! c))
+		       ((list? c) (clear-color-list! c))
+		       (else (raise-exception "3d-clear-color!" 
+					      "Expected vector or list" 
+					      'contract)))
 		 #t)
 	       #f))
 
@@ -150,8 +150,10 @@
 
 	 (define (3d-pixel-transfer pname param)
 	   (if (integer? param)
-	       (spark.opengl::gl-pixel-transfer-i (pixeltransfer->int pname) param)
-	       (spark.opengl::gl-pixel-transfer-f (pixeltransfer->int pname) param)))
+	       (spark.opengl::gl-pixel-transfer-i (pixeltransfer->int pname) 
+						  param)
+	       (spark.opengl::gl-pixel-transfer-f (pixeltransfer->int pname) 
+						  param)))
 
 	 ;; pattern is a 32x32 list of bytes.
 	 (define (3d-polygon-stipple pattern)
@@ -190,26 +192,23 @@
 
 	 (define (make-colors-vector args)
 	   (if (not (eq? args null))
-	       (begin
-		 (cond
-		  ((vector? (car args))
-		   (car args))
-		  ((list? (car args))
-		   (list->vector (car args)))
-		  (else
-		   (let ((colors (vector 0 0 0 0))
-			 (k null))
-		     
-		     (while (not (eq? args null))
-			    (set! k (car args))
-			    (set! args (cdr args))
-			    (case k
-			      ((red) (vector-set! colors 0 (car args)))
-			      ((green) (vector-set! colors 1 (car args)))
-			      ((blue) (vector-set! colors 2 (car args)))
-			      ((alpha) (vector-set! colors 3 (car args))))
-			    (set! args (cdr args)))		 
-		     colors))))
+	       (cond ((vector? (car args))
+		      (car args))
+		     ((list? (car args))
+		      (list->vector (car args)))
+		     (else
+		      (let ((colors (vector 0 0 0 0))
+			    (k null))			
+			(while (not (eq? args null))
+			       (set! k (car args))
+			       (set! args (cdr args))
+			       (case k
+				 ((red) (vector-set! colors 0 (car args)))
+				 ((green) (vector-set! colors 1 (car args)))
+				 ((blue) (vector-set! colors 2 (car args)))
+				 ((alpha) (vector-set! colors 3 (car args))))
+			       (set! args (cdr args)))		 
+			colors)))
 	       null))
 
 	 (define (clear-color-vec! colors)

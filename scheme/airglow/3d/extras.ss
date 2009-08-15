@@ -1,5 +1,5 @@
 ;; Implementation specific functions.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@
 	     (case target
 	       ((fog) (set! t spark.opengl::GL-FOG-HINT))
 	       ((line-smooth) (set! t spark.opengl::GL-LINE-SMOOTH-HINT))
-	       ((perspective-correction) (set! t spark.opengl::GL-PERSPECTIVE-CORRECTION-HINT))
+	       ((perspective-correction) 
+		(set! t spark.opengl::GL-PERSPECTIVE-CORRECTION-HINT))
 	       ((point-smooth) (set! t spark.opengl::GL-POINT-SMOOTH))
 	       ((polygon-smooth) (set! t spark.opengl::GL-POLYGON-SMOOTH))
 	       (else (raise-exception "3d-hint" "Invalid target." 'contract)))
