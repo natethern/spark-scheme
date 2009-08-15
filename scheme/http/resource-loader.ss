@@ -64,7 +64,7 @@
 		(if (not (null? cached)) cached
 		    (read-fresh-script self uri))))))
 
-	 (define (read-fresh-file uri web-server-conf)
+	 (define (read-fresh-file uri web-server-conf)	   
 	   (let ((sz (file-size uri)))		 
 	     (if (> sz (hash-table-get web-server-conf 'max-response-size))
 		 (raise "Response will exceed maximum limit."))
@@ -79,9 +79,8 @@
 	 
 	 (define (read-fresh-script self uri)
 	   (let ((ret (load uri)))
-	     (atomic 
-	      (hash-table-put! (resource-loader-s-script-cache self)
-			       uri ret))
+	     (hash-table-put! (resource-loader-s-script-cache self)
+			      uri ret)
 	     ret))
 
 	 (define (normalize-uri uri)

@@ -25,7 +25,7 @@
 		(net-address)
 		((prefix spark.socket:: #%spark-socket)))
 
-	(export socket socket-instance socket? 
+	(export socket socket?
 		socket-open socket-bind socket-connect
 		socket-listen socket-accept socket-recv
 		socket-recv-line socket-recv-bytes socket-recv-from
@@ -33,21 +33,18 @@
 		socket-send-bytes socket-send-bytes-to socket-option! 
 		socket-option socket-close socket-non-blocking!
 		socket-async-io! socket-non-blocking? socket-async-io?
-		socket-handle socket-handle!
-		connection-socket connection-address)
+		socket-handle connection-socket connection-address)
 
 	;; Represents the memory layout of a network socket.
 	(define-struct socket-s (handle))
 
-	(define sockets (make-hash-table))
-	
 	;; Creates and initializes a socket object.
 	;; Returns the new socket object on success.
-	(define (socket . args)
-	  (let ((self (make-socket-s null)))
-	    (if (not (eqv? args null))
-		(socket-handle! self (car args)))
-	    self))
+	(define socket
+	  (case-lambda 
+	   (() (socket null))
+	   ((handle)
+	    (make-socket-s handle))))
 
 	(define (socket? self)
 	  (socket-s? self))
@@ -66,7 +63,7 @@
 	   ((self domain type protocol)
 	    (if (not (eqv? (socket-s-handle self) null))
 		(socket-close self))
-	    (socket-handle! self (spark.socket::socket 
+	    (set-socket-s-handle! self (spark.socket::socket 
 				  (domain->integer domain)
 				  (type->integer type)
 				  (protocol->integer protocol)))
@@ -135,7 +132,7 @@
 	    (if (eqv? r null)
 		(raise-sys-exception "socket-accept"))
 	    (set! client-sock (socket))	    
-	    (socket-handle! client-sock (car r))
+	    (set-socket-s-handle! client-sock (car r))
 	    (set! rest (cdr r))
 	    (if (not (eqv? rest null))
 		(set! client-addr (list->address (car rest))))
@@ -315,29 +312,15 @@
 
 	;; Closes the socket handle.
 	(define (socket-close self)
-	  (let ((ret #t))
+	  (let ((ret #f))
 	    (if (not (eqv? (socket-s-handle self) null))
-		(begin
-		  (set! ret (spark.socket::close (socket-s-handle self)))
-		  (if (eqv? ret #t)
-		      (begin
-			(hash-table-remove! sockets (socket-s-handle self))
-			(set-socket-s-handle! self null)))))
+		(set! ret (spark.socket::close (socket-s-handle self))))
+	    (if ret (set-socket-s-handle! self null))
 	    ret))
 
 	(define (socket-handle self)
 	  (socket-s-handle self))
 
-	(define (socket-handle! self handle)
-	  (set-socket-s-handle! self handle)
-	  (hash-table-put! sockets handle self))
-
-	(define (socket-instance handle)
-	  (let ((self (hash-table-get sockets handle null)))
-	    (if (eqv? self null)
-		(set! self (socket handle)))
-	    self))
-		  
 	(define (optionname->integer name)
 	  (case name
 	    ((keepalive) spark.socket::SO-KEEPALIVE)

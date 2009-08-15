@@ -31,6 +31,20 @@
 				       error)))))))))
     #t))
 
+;; A hook that will be executed before sending each response.
+(define (reponse-hook web-server-obj client-connection response)
+  (printf "~a~n" response) (flush-output))
+
+;; Set the hooks.
 (web-server-hook! httpd 'before-handle-request client-timeout-hook)
-(web-server-start httpd)
+(web-server-hook! httpd 'before-send-response reponse-hook)
+
+(define conn-count 0)
+
+;; Start the server with a simple exit condition - serve upto 10000 connection.
+(web-server-start httpd 
+		  (lambda () 
+		    (set! conn-count (add1 conn-count)) 
+		    (< conn-count 10000)))
+
 (web-server-stop httpd)

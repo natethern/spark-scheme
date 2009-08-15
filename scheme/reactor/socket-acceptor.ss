@@ -181,7 +181,7 @@
 		   ;; callback.
 		   (if (not (eqv? on-client-read null))
 		       (begin
-			 (let ((client-socket (socket-instance handle)))
+			 (let ((client-socket (socket handle)))
 			   (on-client-read self client-socket))))))))
 
 	 ;; The handler in the reactor will call this method on
@@ -196,7 +196,7 @@
 		   (if (not (eqv? on-server-write null))
 		       (on-server-write self server-socket)))
 		 (begin
-		   (let ((socket-object (socket-instance handle)))
+		   (let ((socket-object (socket handle)))
 		     (if (not (eqv? on-client-write null))
 			 (on-client-write self socket-object)))))))
 
@@ -212,7 +212,7 @@
 		   (if (not (eqv? on-server-error null))
 		       (on-server-error self server-socket)))
 		 (begin
-		   (let ((socket-object (socket-instance handle)))
+		   (let ((socket-object (socket handle)))
 		     (if (not (eqv? on-client-error null))
 			 (on-client-error self socket-object)))))))
 
