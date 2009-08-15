@@ -68,8 +68,14 @@
 	   (let ((sz (file-size uri)))		 
 	     (if (> sz (hash-table-get web-server-conf 'max-response-size))
 		 (raise "Response will exceed maximum limit."))
-	     (let ((file (open-input-file uri)))
-	       (read-bytes sz file))))
+	     (let ((file null) (err null) (data null))
+	       (try
+		(set! file (open-input-file uri))
+		(set! data (read-bytes sz file))
+		(catch (lambda (ex) (set! err ex))))
+	       (if (not (null? file)) (close-input-port file))
+	       (if (not (null? err)) (raise err))
+	       data)))
 	 
 	 (define (read-fresh-script self uri)
 	   (let ((ret (load uri)))
