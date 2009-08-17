@@ -29,13 +29,20 @@ using namespace spark_socket;
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <netinet/in.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
+#ifdef LINUX
 #include <linux/if.h>
+#else
+#include <net/if.h>
+#endif
 /*#endif*/
+
+#ifndef O_ASYNC
+#define O_ASYNC O_NONBLOCK
+#endif
 
 static const char* MODULE_NAME = "#%spark-socket";
 
@@ -95,25 +102,19 @@ _add_constants(Scheme_Env* env)
     Constant("POLLNVAL", POLLNVAL),
     Constant("MSG-OOB", MSG_OOB),
     Constant("MSG-PEEK", MSG_PEEK),
-    Constant("MSG-WAITALL", MSG_WAITALL),
     Constant("SO-KEEPALIVE", SO_KEEPALIVE),
     Constant("SO-OOBINLINE", SO_OOBINLINE),
     Constant("SO-RCVLOWAT", SO_RCVLOWAT),
     Constant("SO-SNDLOWAT", SO_SNDLOWAT),
-    Constant("SO-BSDCOMPAT", SO_BSDCOMPAT),
-    Constant("SO-PASSCRED", SO_PASSCRED),
     Constant("SO-DEBUG", SO_DEBUG),
     Constant("SO-REUSEADDR", SO_REUSEADDR),
     Constant("SO-DONTROUTE", SO_DONTROUTE),
     Constant("SO-BROADCAST", SO_BROADCAST),
     Constant("SO-SNDBUF", SO_SNDBUF),
     Constant("SO-RCVBUF", SO_RCVBUF),
-    Constant("SO-PRIORITY", SO_PRIORITY),
-    Constant("SO-TIMESTAMP", SO_TIMESTAMP),
     Constant("SO-ERROR", SO_ERROR),
     Constant("SO-ACCEPTCONN", SO_ACCEPTCONN),
     Constant("SO-TYPE", SO_TYPE),
-    Constant("SO-BINDTODEVICE", SO_BINDTODEVICE),
     Constant("SO-LINGER", SO_LINGER),
     Constant("SOL-SOCKET", SOL_SOCKET),
     Constant("SHUT-RD", SHUT_RD),
@@ -122,18 +123,49 @@ _add_constants(Scheme_Env* env)
     Constant("PF-UNSPEC", PF_UNSPEC),
     Constant("PF-LOCAL", PF_LOCAL),
     Constant("PF-UNIX", PF_UNIX),
-    Constant("PF-FILE", PF_FILE),
     Constant("PF-INET", PF_INET),
+    Constant("PF-APPLETALK", PF_APPLETALK),
+    Constant("PF-DECNET", PF_DECnet),
+    Constant("PF-SNA", PF_SNA),
+    Constant("PF-MAX", PF_MAX),
+    Constant("AF-UNSPEC", AF_UNSPEC),
+    Constant("AF-LOCAL", AF_LOCAL),
+    Constant("AF-UNIX", AF_UNIX),
+    Constant("AF-INET", AF_INET),
+    Constant("AF-APPLETALK", AF_APPLETALK),
+    Constant("AF-DECNET", AF_DECnet),
+    Constant("AF-SNA", AF_SNA),
+    Constant("AF-MAX", AF_MAX),
+    Constant("SOCK-STREAM", SOCK_STREAM),
+    Constant("SOCK-DGRAM", SOCK_DGRAM),
+    Constant("SOCK-RAW", SOCK_RAW),
+    Constant("SOCK-RDM", SOCK_RDM),
+    Constant("SOCK-SEQPACKET", SOCK_SEQPACKET),
+    Constant("INADDR-ANY", INADDR_ANY),
+    Constant("MSG-OOB", MSG_OOB),
+    Constant("MSG-DONTROUTE", MSG_DONTROUTE),
+    Constant("MSG-NOSIGNAL", MSG_NOSIGNAL),
+    Constant("MSG-PEEK", MSG_PEEK),
+    Constant("F-SETFL", F_SETFL),
+    Constant("O-NONBLOCK", O_NONBLOCK),
+    Constant("O-ASYNC", O_ASYNC),
+    Constant("IPPROTO-RAW", IPPROTO_RAW),
+#if defined(LINUX) || defined(BSD)
+    Constant("MSG-WAITALL", MSG_WAITALL),
+    Constant("SO-BSDCOMPAT", SO_BSDCOMPAT),
+    Constant("SO-PASSCRED", SO_PASSCRED),
+    Constant("SO-PRIORITY", SO_PRIORITY),
+    Constant("SO-TIMESTAMP", SO_TIMESTAMP),
+    Constant("SO-BINDTODEVICE", SO_BINDTODEVICE),
+    Constant("PF-FILE", PF_FILE),
     Constant("PF-AX25", PF_AX25),
     Constant("PF-IPX", PF_IPX),
-    Constant("PF-APPLETALK", PF_APPLETALK),
     Constant("PF-NETROM", PF_NETROM),
     Constant("PF-BRIDGE", PF_BRIDGE),
     Constant("PF-ATMPVC", PF_ATMPVC),
     Constant("PF-X25", PF_X25),
     Constant("PF-INET6", PF_INET6),
     Constant("PF-ROSE", PF_ROSE),
-    Constant("PF-DECNET", PF_DECnet),
     Constant("PF-NETBEUI", PF_NETBEUI),
     Constant("PF-SECURITY", PF_SECURITY),
     Constant("PF-KEY", PF_KEY),
@@ -143,27 +175,19 @@ _add_constants(Scheme_Env* env)
     Constant("PF-ASH", PF_ASH),
     Constant("PF-ECONET", PF_ECONET),
     Constant("PF-ATMSVC", PF_ATMSVC),
-    Constant("PF-SNA", PF_SNA),
     Constant("PF-IRDA", PF_IRDA),
     Constant("PF-PPPOX", PF_PPPOX),
     Constant("PF-WANPIPE", PF_WANPIPE),
     Constant("PF-BLUETOOTH", PF_BLUETOOTH),
-    Constant("PF-MAX", PF_MAX),
-    Constant("AF-UNSPEC", AF_UNSPEC),
-    Constant("AF-LOCAL", AF_LOCAL),
-    Constant("AF-UNIX", AF_UNIX),
     Constant("AF-FILE", AF_FILE),
-    Constant("AF-INET", AF_INET),
     Constant("AF-AX25", AF_AX25),
     Constant("AF-IPX", AF_IPX),
-    Constant("AF-APPLETALK", AF_APPLETALK),
     Constant("AF-NETROM", AF_NETROM),
     Constant("AF-BRIDGE", AF_BRIDGE),
     Constant("AF-ATMPVC", AF_ATMPVC),
     Constant("AF-X25", AF_X25),
     Constant("AF-INET6", AF_INET6),
     Constant("AF-ROSE", AF_ROSE),
-    Constant("AF-DECNET", AF_DECnet),
     Constant("AF-NETBEUI", AF_NETBEUI),
     Constant("AF-SECURITY", AF_SECURITY),
     Constant("AF-KEY", AF_KEY),
@@ -173,12 +197,10 @@ _add_constants(Scheme_Env* env)
     Constant("AF-ASH", AF_ASH),
     Constant("AF-ECONET", AF_ECONET),
     Constant("AF-ATMSVC", AF_ATMSVC),
-    Constant("AF-SNA", AF_SNA),
     Constant("AF-IRDA", AF_IRDA),
     Constant("AF-PPPOX", AF_PPPOX),
     Constant("AF-WANPIPE", AF_WANPIPE),
     Constant("AF-BLUETOOTH", AF_BLUETOOTH),
-    Constant("AF-MAX", AF_MAX),
     Constant("SOL-RAW", SOL_RAW),
     Constant("SOL-DECNET", SOL_DECNET),
     Constant("SOL-X25", SOL_X25),
@@ -186,24 +208,11 @@ _add_constants(Scheme_Env* env)
     Constant("SOL-ATM", SOL_ATM),
     Constant("SOL-AAL", SOL_AAL),
     Constant("SOL-IRDA", SOL_IRDA),
-    Constant("SOCK-STREAM", SOCK_STREAM),
-    Constant("SOCK-DGRAM", SOCK_DGRAM),
-    Constant("SOCK-RAW", SOCK_RAW),
-    Constant("SOCK-RDM", SOCK_RDM),
-    Constant("SOCK-SEQPACKET", SOCK_SEQPACKET),
     Constant("SOCK-PACKET", SOCK_PACKET),
-    Constant("INADDR-ANY", INADDR_ANY),
-    Constant("MSG-OOB", MSG_OOB),
-    Constant("MSG-DONTROUTE", MSG_DONTROUTE),
     Constant("MSG-DONTWAIT", MSG_DONTWAIT),
-    Constant("MSG-NOSIGNAL", MSG_NOSIGNAL),
-    Constant("MSG-PEEK", MSG_PEEK),
     Constant("MSG-WAITALL", MSG_WAITALL),
-    Constant("F-SETFL", F_SETFL),
-    Constant("O-NONBLOCK", O_NONBLOCK),
-    Constant("O-ASYNC", O_ASYNC),
-    Constant("IPPROTO-IP", IPPROTO_IP),
     Constant("IPPROTO-HOPOPTS", IPPROTO_HOPOPTS),
+    Constant("IPPROTO-IP", IPPROTO_IP),
     Constant("IPPROTO-ICMP", IPPROTO_ICMP),
     Constant("IPPROTO-IGMP", IPPROTO_IGMP),
     Constant("IPPROTO-IPIP", IPPROTO_IPIP),
@@ -228,7 +237,94 @@ _add_constants(Scheme_Env* env)
     Constant("IPPROTO-PIM", IPPROTO_PIM), 
     Constant("IPPROTO-COMP", IPPROTO_COMP),
     Constant("IPPROTO-SCTP", IPPROTO_SCTP),
-    Constant("IPPROTO-RAW", IPPROTO_RAW),
+#else
+    Constant("MSG-WAITALL", -1),
+    Constant("SO-BSDCOMPAT", -1),
+    Constant("SO-PASSCRED", -1),
+    Constant("SO-PRIORITY", -1),
+    Constant("SO-TIMESTAMP", -1),
+    Constant("SO-BINDTODEVICE", -1),
+    Constant("PF-FILE", -1),
+    Constant("PF-AX25", -1),
+    Constant("PF-IPX", -1),
+    Constant("PF-NETROM", -1),
+    Constant("PF-BRIDGE", -1),
+    Constant("PF-ATMPVC", -1),
+    Constant("PF-X25", -1),
+    Constant("PF-INET6", -1),
+    Constant("PF-ROSE", -1),
+    Constant("PF-NETBEUI", -1),
+    Constant("PF-SECURITY", -1),
+    Constant("PF-KEY", -1),
+    Constant("PF-NETLINK", -1),
+    Constant("PF-ROUTE", -1),
+    Constant("PF-PACKET", -1),
+    Constant("PF-ASH", -1),
+    Constant("PF-ECONET", -1),
+    Constant("PF-ATMSVC", -1),
+    Constant("PF-IRDA", -1),
+    Constant("PF-PPPOX", -1),
+    Constant("PF-WANPIPE", -1),
+    Constant("PF-BLUETOOTH", -1),
+    Constant("AF-FILE", -1),
+    Constant("AF-AX25", -1),
+    Constant("AF-IPX", -1),
+    Constant("AF-NETROM", -1),
+    Constant("AF-BRIDGE", -1),
+    Constant("AF-ATMPVC", -1),
+    Constant("AF-X25", -1),
+    Constant("AF-INET6", -1),
+    Constant("AF-ROSE", -1),
+    Constant("AF-NETBEUI", -1),
+    Constant("AF-SECURITY", -1),
+    Constant("AF-KEY", -1),
+    Constant("AF-NETLINK", -1),
+    Constant("AF-ROUTE", -1),
+    Constant("AF-PACKET", -1),
+    Constant("AF-ASH", -1),
+    Constant("AF-ECONET", -1),
+    Constant("AF-ATMSVC", -1),
+    Constant("AF-IRDA", -1),
+    Constant("AF-PPPOX", -1),
+    Constant("AF-WANPIPE", -1),
+    Constant("AF-BLUETOOTH", -1),
+    Constant("SOL-RAW", -1),
+    Constant("SOL-DECNET", -1),
+    Constant("SOL-X25", -1),
+    Constant("SOL-PACKET", -1),
+    Constant("SOL-ATM", -1),
+    Constant("SOL-AAL", -1),
+    Constant("SOL-IRDA", -1),
+    Constant("SOCK-PACKET", -1),
+    Constant("MSG-DONTWAIT", -1),
+    Constant("MSG-WAITALL", -1),
+    Constant("IPPROTO-HOPOPTS", -1),
+    Constant("IPPROTO-IP", -1),
+    Constant("IPPROTO-ICMP", -1),
+    Constant("IPPROTO-IGMP", -1),
+    Constant("IPPROTO-IPIP", -1),
+    Constant("IPPROTO-TCP", -1),
+    Constant("IPPROTO-EGP", -1),
+    Constant("IPPROTO-PUP", -1),
+    Constant("IPPROTO-UDP", -1),
+    Constant("IPPROTO-IDP", -1),
+    Constant("IPPROTO-TP", -1),
+    Constant("IPPROTO-IPV6", -1),
+    Constant("IPPROTO-ROUTING", -1),
+    Constant("IPPROTO-FRAGMENT", -1),
+    Constant("IPPROTO-RSVP", -1),
+    Constant("IPPROTO-GRE", -1), 
+    Constant("IPPROTO-ESP", -1), 
+    Constant("IPPROTO-AH", -1),
+    Constant("IPPROTO-ICMPV6", -1),
+    Constant("IPPROTO-NONE", -1),
+    Constant("IPPROTO-DSTOPTS", -1),
+    Constant("IPPROTO-MTP", -1),
+    Constant("IPPROTO-ENCAP", -1),
+    Constant("IPPROTO-PIM", -1), 
+    Constant("IPPROTO-COMP", -1),
+    Constant("IPPROTO-SCTP", -1),
+#endif
     Constant()
   };  
   return spark::add_constants(env, constants, "spark-socket");
@@ -237,32 +333,32 @@ _add_constants(Scheme_Env* env)
 // exported function signatures
 namespace spark_socket
 {
-  static Scheme_Object* socket(int, Scheme_Object**);
-  static Scheme_Object* accept(int, Scheme_Object**);
-  static Scheme_Object* bind(int, Scheme_Object**);
-  static Scheme_Object* connect(int, Scheme_Object**);
-  static Scheme_Object* gethostname(int, Scheme_Object**);
-  static Scheme_Object* gethostbyname(int, Scheme_Object**);
-  static Scheme_Object* getpeername(int, Scheme_Object**);
-  static Scheme_Object* set_nonblocking(int, Scheme_Object**);
-  static Scheme_Object* set_async_io(int, Scheme_Object**);
-  static Scheme_Object* get_nonblocking(int, Scheme_Object**);
-  static Scheme_Object* get_async_io(int, Scheme_Object**);
+  static Scheme_Object* spark_socket(int, Scheme_Object**);
+  static Scheme_Object* spark_accept(int, Scheme_Object**);
+  static Scheme_Object* spark_bind(int, Scheme_Object**);
+  static Scheme_Object* spark_connect(int, Scheme_Object**);
+  static Scheme_Object* spark_gethostname(int, Scheme_Object**);
+  static Scheme_Object* spark_gethostbyname(int, Scheme_Object**);
+  static Scheme_Object* spark_getpeername(int, Scheme_Object**);
+  static Scheme_Object* spark_set_nonblocking(int, Scheme_Object**);
+  static Scheme_Object* spark_set_async_io(int, Scheme_Object**);
+  static Scheme_Object* spark_get_nonblocking(int, Scheme_Object**);
+  static Scheme_Object* spark_get_async_io(int, Scheme_Object**);
   static Scheme_Object* spark_htonl(int, Scheme_Object**);
   static Scheme_Object* spark_htons(int, Scheme_Object**);
   static Scheme_Object* spark_ntohl(int, Scheme_Object**);
   static Scheme_Object* spark_ntohs(int, Scheme_Object**);
-  static Scheme_Object* listen(int, Scheme_Object**);
-  static Scheme_Object* poll(int, Scheme_Object**);
-  static Scheme_Object* recv(int, Scheme_Object**);
-  static Scheme_Object* recv_line(int, Scheme_Object**);
-  static Scheme_Object* recvfrom(int, Scheme_Object**);
-  static Scheme_Object* send(int, Scheme_Object**);
-  static Scheme_Object* sendto(int, Scheme_Object**);
-  static Scheme_Object* setsockopt(int, Scheme_Object**);
-  static Scheme_Object* getsockopt(int, Scheme_Object**);
-  static Scheme_Object* shutdown(int, Scheme_Object**);
-  static Scheme_Object* close(int, Scheme_Object**);
+  static Scheme_Object* spark_listen(int, Scheme_Object**);
+  static Scheme_Object* spark_poll(int, Scheme_Object**);
+  static Scheme_Object* spark_recv(int, Scheme_Object**);
+  static Scheme_Object* spark_recv_line(int, Scheme_Object**);
+  static Scheme_Object* spark_recvfrom(int, Scheme_Object**);
+  static Scheme_Object* spark_send(int, Scheme_Object**);
+  static Scheme_Object* spark_sendto(int, Scheme_Object**);
+  static Scheme_Object* spark_setsockopt(int, Scheme_Object**);
+  static Scheme_Object* spark_getsockopt(int, Scheme_Object**);
+  static Scheme_Object* spark_shutdown(int, Scheme_Object**);
+  static Scheme_Object* spark_close(int, Scheme_Object**);
   static Scheme_Object* equals(int, Scheme_Object**);
 } // namespace spark_socket
 
@@ -271,32 +367,32 @@ _add_procedures(Scheme_Env* env)
 {
   using spark::Procedure;
   Procedure* procedures[] = { 
-    new Procedure(spark_socket::accept, "accept", 1),
-    new Procedure(spark_socket::bind, "bind", 2),
-    new Procedure(spark_socket::connect, "connect", 2),
-    new Procedure(spark_socket::close, "close", 1),
-    new Procedure(spark_socket::gethostname, "gethostname", 0),
-    new Procedure(spark_socket::gethostbyname, "gethostbyname", 1),
-    new Procedure(spark_socket::getpeername, "getpeername", 1),
-    new Procedure(spark_socket::set_nonblocking, "set-non-blocking", 2),
-    new Procedure(spark_socket::set_async_io, "set-async-io", 2),
-    new Procedure(spark_socket::get_nonblocking, "get-non-blocking", 1),
-    new Procedure(spark_socket::get_async_io, "get-async-io", 1),
+    new Procedure(spark_socket::spark_accept, "accept", 1),
+    new Procedure(spark_socket::spark_bind, "bind", 2),
+    new Procedure(spark_socket::spark_connect, "connect", 2),
+    new Procedure(spark_socket::spark_close, "close", 1),
+    new Procedure(spark_socket::spark_gethostname, "gethostname", 0),
+    new Procedure(spark_socket::spark_gethostbyname, "gethostbyname", 1),
+    new Procedure(spark_socket::spark_getpeername, "getpeername", 1),
+    new Procedure(spark_socket::spark_set_nonblocking, "set-non-blocking", 2),
+    new Procedure(spark_socket::spark_set_async_io, "set-async-io", 2),
+    new Procedure(spark_socket::spark_get_nonblocking, "get-non-blocking", 1),
+    new Procedure(spark_socket::spark_get_async_io, "get-async-io", 1),
     new Procedure(spark_socket::spark_htonl, "htonl", 1),
     new Procedure(spark_socket::spark_htons, "htons", 1),
     new Procedure(spark_socket::spark_ntohl, "ntohl", 1),
     new Procedure(spark_socket::spark_ntohs, "ntohs", 1),
-    new Procedure(spark_socket::listen, "listen", 2),
-    new Procedure(spark_socket::poll, "poll", 2),
-    new Procedure(spark_socket::recv, "recv", 4),
-    new Procedure(spark_socket::recv_line, "recv-line", 3),
-    new Procedure(spark_socket::recvfrom, "recvfrom", 4),
-    new Procedure(spark_socket::send, "send", 3),
-    new Procedure(spark_socket::sendto, "sendto", 4),
-    new Procedure(spark_socket::setsockopt, "setsockopt", 4),
-    new Procedure(spark_socket::getsockopt, "getsockopt", 3),
-    new Procedure(spark_socket::socket, "socket", 0, 3),
-    new Procedure(spark_socket::shutdown, "shutdown", 2),
+    new Procedure(spark_socket::spark_listen, "listen", 2),
+    new Procedure(spark_socket::spark_poll, "poll", 2),
+    new Procedure(spark_socket::spark_recv, "recv", 4),
+    new Procedure(spark_socket::spark_recv_line, "recv-line", 3),
+    new Procedure(spark_socket::spark_recvfrom, "recvfrom", 4),
+    new Procedure(spark_socket::spark_send, "send", 3),
+    new Procedure(spark_socket::spark_sendto, "sendto", 4),
+    new Procedure(spark_socket::spark_setsockopt, "setsockopt", 4),
+    new Procedure(spark_socket::spark_getsockopt, "getsockopt", 3),
+    new Procedure(spark_socket::spark_socket, "socket", 0, 3),
+    new Procedure(spark_socket::spark_shutdown, "shutdown", 2),
     new Procedure(spark_socket::equals, "equals?", 2),
     0
   };
@@ -318,7 +414,7 @@ _add_procedures(Scheme_Env* env)
 // address-info is the address of the site connecting to you.
 // The return value will be NULL on failure.
 Scheme_Object*
-spark_socket::accept(int argc, Scheme_Object** argv)
+spark_socket::spark_accept(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -362,7 +458,7 @@ spark_socket::accept(int argc, Scheme_Object** argv)
 // to use INADDR_ANY.
 // Returns #t on success, NULL on error.
 Scheme_Object* 
-spark_socket::bind(int argc, Scheme_Object** argv)
+spark_socket::spark_bind(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -382,7 +478,7 @@ spark_socket::bind(int argc, Scheme_Object** argv)
 // Connects the socket to a server.
 // Takes two arguemts, a valid socket and an address-info.
 Scheme_Object* 
-spark_socket::connect(int argc, Scheme_Object** argv)
+spark_socket::spark_connect(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -401,7 +497,7 @@ spark_socket::connect(int argc, Scheme_Object** argv)
 
 // Returns the name of the system.
 Scheme_Object*
-spark_socket::gethostname(int argc, Scheme_Object** argv)
+spark_socket::spark_gethostname(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -413,7 +509,7 @@ spark_socket::gethostname(int argc, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::gethostbyname(int argc, Scheme_Object** argv)
+spark_socket::spark_gethostbyname(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -427,7 +523,7 @@ spark_socket::gethostbyname(int argc, Scheme_Object** argv)
 
 // Return address info about the remote side of the connection.
 Scheme_Object* 
-spark_socket::getpeername(int, Scheme_Object** argv)
+spark_socket::spark_getpeername(int, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -441,7 +537,7 @@ spark_socket::getpeername(int, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::set_nonblocking(int argc, Scheme_Object** argv)
+spark_socket::spark_set_nonblocking(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -461,7 +557,7 @@ spark_socket::set_nonblocking(int argc, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::get_nonblocking(int argc, Scheme_Object** argv)
+spark_socket::spark_get_nonblocking(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -478,7 +574,7 @@ spark_socket::get_nonblocking(int argc, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::set_async_io(int argc, Scheme_Object** argv)
+spark_socket::spark_set_async_io(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -498,7 +594,7 @@ spark_socket::set_async_io(int argc, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::get_async_io(int argc, Scheme_Object** argv)
+spark_socket::spark_get_async_io(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -524,7 +620,7 @@ spark_socket::spark_htonl(int argc, Scheme_Object** argv)
     scheme_wrong_type("htonl", "int", 0, argc, argv);
   
   uint32_t hostlong = static_cast<uint32_t>(v);
-  _ret_ = scheme_make_integer(::htonl(hostlong));
+  _ret_ = scheme_make_integer(htonl(hostlong));
 
   DEFAULT_RET_FINISH;
 }
@@ -539,7 +635,7 @@ spark_socket::spark_htons(int argc, Scheme_Object** argv)
     scheme_wrong_type("htons", "int", 0, argc, argv);
   
   uint16_t hostshort = static_cast<uint32_t>(v);
-  _ret_ = scheme_make_integer(::htons(hostshort));
+  _ret_ = scheme_make_integer(htons(hostshort));
   
   DEFAULT_RET_FINISH;
 }
@@ -554,7 +650,7 @@ spark_socket::spark_ntohl(int argc, Scheme_Object** argv)
     scheme_wrong_type("ntohl", "int", 0, argc, argv);
   
   uint32_t netlong = static_cast<uint32_t>(v);
-  _ret_ = scheme_make_integer(::ntohl(netlong));
+  _ret_ = scheme_make_integer(ntohl(netlong));
 
   DEFAULT_RET_FINISH;
 }
@@ -569,13 +665,13 @@ spark_socket::spark_ntohs(int argc, Scheme_Object** argv)
     scheme_wrong_type("ntohs", "int", 0, argc, argv);
   
   uint16_t netshort = static_cast<uint32_t>(v);
-  _ret_ = scheme_make_integer(::ntohs(netshort));
+  _ret_ = scheme_make_integer(ntohs(netshort));
 
   DEFAULT_RET_FINISH;
 }
 
 Scheme_Object* 
-spark_socket::listen(int argc, Scheme_Object** argv)
+spark_socket::spark_listen(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -591,7 +687,7 @@ spark_socket::listen(int argc, Scheme_Object** argv)
 }
 
 Scheme_Object* 
-spark_socket::poll(int, Scheme_Object**)
+spark_socket::spark_poll(int, Scheme_Object**)
 {
   DEFAULT_RET_INIT;
 
@@ -611,7 +707,7 @@ spark_socket::poll(int, Scheme_Object**)
 // Returns the received bytes as a string or
 // null on error.
 Scheme_Object* 
-spark_socket::recv(int argc, Scheme_Object** argv)
+spark_socket::spark_recv(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -652,7 +748,7 @@ spark_socket::recv(int argc, Scheme_Object** argv)
 // Returns the received bytes as a string or
 // null on error.
 Scheme_Object* 
-spark_socket::recv_line(int argc, Scheme_Object** argv)
+spark_socket::spark_recv_line(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -718,7 +814,7 @@ spark_socket::recv_line(int argc, Scheme_Object** argv)
 // Returns the received bytes as a string or
 // null on error.
 Scheme_Object* 
-spark_socket::recvfrom(int argc, Scheme_Object** argv)
+spark_socket::spark_recvfrom(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -759,7 +855,7 @@ spark_socket::recvfrom(int argc, Scheme_Object** argv)
 // 3. flags
 // Returns number of bytes sent, or null on error.
 Scheme_Object* 
-spark_socket::send(int, Scheme_Object** argv)
+spark_socket::spark_send(int, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -790,13 +886,13 @@ spark_socket::send(int, Scheme_Object** argv)
   if (sent >= 0)
     _ret_ = scheme_make_integer(static_cast<long>(sent));
   else if (errno == EWOULDBLOCK)
-    _ret_ = scheme_make_utf8_string("");
+    _ret_ = scheme_make_integer(static_cast<long>(0));
 
   DEFAULT_RET_FINISH;
 }
 
 Scheme_Object* 
-spark_socket::sendto(int argc, Scheme_Object** argv)
+spark_socket::spark_sendto(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -841,7 +937,7 @@ spark_socket::sendto(int argc, Scheme_Object** argv)
 // this can be either an integer, a string or a
 // list of two integers (represents a linger struct)
 Scheme_Object* 
-spark_socket::setsockopt(int argc, Scheme_Object** argv)
+spark_socket::spark_setsockopt(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -857,20 +953,22 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
   switch (optname)
     {
       /* options that take an integer option value. */
+#if defined(LINUX) || defined(BSD)
+    case SO_BSDCOMPAT:
+    case SO_PASSCRED:
+    case SO_PRIORITY:
+    case SO_TIMESTAMP:
+#endif
     case SO_KEEPALIVE:
     case SO_OOBINLINE:
     case SO_RCVLOWAT:
     case SO_SNDLOWAT:
-    case SO_BSDCOMPAT:
-    case SO_PASSCRED:
     case SO_DEBUG:
     case SO_REUSEADDR:
     case SO_DONTROUTE:
     case SO_BROADCAST:
     case SO_SNDBUF:
     case SO_RCVBUF:
-    case SO_PRIORITY:
-    case SO_TIMESTAMP:
       /* following three options are valid with getsockopt only. */
     case SO_ERROR: 
     case SO_ACCEPTCONN:
@@ -884,6 +982,7 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
 	break;
       }
       /* options that take a string value. */
+#if defined(LINUX) || defined(BSD)
     case SO_BINDTODEVICE:
       {
 	Scheme_Object* str = scheme_char_string_to_byte_string(argv[3]);
@@ -892,6 +991,7 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
 			   (void*)optval.c_str(), optval.length());
 	break;
       }
+#endif
     case SO_LINGER:      
       {
 	/* Value is of type struct linger which consists of two ints.
@@ -901,6 +1001,7 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
 	if (scheme_list_length(argv[3]) != 2)
 	  scheme_wrong_type("setsockopt", "list-of-2-ints",
 			    3, argc, argv);
+#if defined(LINUX) || defined(BSD)
 	if (!spark::Utils::int_from_scheme_long(SCHEME_CAR(argv[3]), 
 						optval.l_onoff))
 	  scheme_wrong_type("setsockopt", "list-of-2-ints",
@@ -909,6 +1010,18 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
 						optval.l_linger))
 	  scheme_wrong_type("setsockopt", "list-of-2-ints",
 			    3, argc, argv);
+#else
+	if (!spark::Utils::int_from_scheme_long((const Scheme_Object*)
+						SCHEME_CAR(argv[3]), 
+						(int&)optval.l_onoff))
+	  scheme_wrong_type("setsockopt", "list-of-2-ints",
+			    3, argc, argv);
+	if (!spark::Utils::int_from_scheme_long((const Scheme_Object*)
+						SCHEME_CAR(SCHEME_CDR(argv[3])), 
+						(int&)optval.l_linger))
+	  scheme_wrong_type("setsockopt", "list-of-2-ints",
+			    3, argc, argv);
+#endif
 	ret = ::setsockopt(sock, level, optname, 
 			   &optval, sizeof(optval));
 	break;
@@ -932,7 +1045,7 @@ spark_socket::setsockopt(int argc, Scheme_Object** argv)
 // two integers based on the option name.
 // On error, returns NULL.
 Scheme_Object* 
-spark_socket::getsockopt(int argc, Scheme_Object** argv)
+spark_socket::spark_getsockopt(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -948,20 +1061,22 @@ spark_socket::getsockopt(int argc, Scheme_Object** argv)
   switch (optname)
     {
       /* options that return an integer option value. */
+#if defined(LINUX) || defined(BSD)
+    case SO_BSDCOMPAT:
+    case SO_PASSCRED:
+    case SO_PRIORITY:
+    case SO_TIMESTAMP:
+#endif
     case SO_KEEPALIVE:
     case SO_OOBINLINE:
     case SO_RCVLOWAT:
     case SO_SNDLOWAT:
-    case SO_BSDCOMPAT:
-    case SO_PASSCRED:
     case SO_DEBUG:
     case SO_REUSEADDR:
     case SO_DONTROUTE:
     case SO_BROADCAST:
     case SO_SNDBUF:
     case SO_RCVBUF:
-    case SO_PRIORITY:
-    case SO_TIMESTAMP:
     case SO_ERROR: 
     case SO_ACCEPTCONN:
     case SO_TYPE:
@@ -975,6 +1090,7 @@ spark_socket::getsockopt(int argc, Scheme_Object** argv)
 	break;
       }
       /* options that return a string value. */
+#if defined(LINUX) || defined(BSD)
     case SO_BINDTODEVICE:
       {
 	char optval[IFNAMSIZ];
@@ -985,6 +1101,7 @@ spark_socket::getsockopt(int argc, Scheme_Object** argv)
 	  _ret_ = scheme_make_utf8_string(optval);
 	break;
       }
+#endif
     case SO_LINGER:      
       {
 	/* Returns a list of two ints */
@@ -1022,7 +1139,7 @@ spark_socket::getsockopt(int argc, Scheme_Object** argv)
 // 1. socket
 // 2. describes how to shut down.
 Scheme_Object* 
-spark_socket::shutdown(int argc, Scheme_Object** argv)
+spark_socket::spark_shutdown(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 
@@ -1039,7 +1156,7 @@ spark_socket::shutdown(int argc, Scheme_Object** argv)
 // Allocates a socket decsriptor.
 // Returns NULL on failure.
 Scheme_Object* 
-spark_socket::socket(int argc, Scheme_Object** argv)
+spark_socket::spark_socket(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
   
@@ -1077,7 +1194,7 @@ spark_socket::socket(int argc, Scheme_Object** argv)
 // Closes a socket descriptor.
 // Returns NULL on failure, #t on success.
 Scheme_Object*
-spark_socket::close(int argc, Scheme_Object** argv)
+spark_socket::spark_close(int argc, Scheme_Object** argv)
 {
   DEFAULT_RET_INIT;
 

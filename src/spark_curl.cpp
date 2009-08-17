@@ -99,16 +99,80 @@ struct Curl
     return _lasts[p];
   }
 
+  // Older Cygwin might need these.
+// #ifndef CURLOPT_POST301
+// #define CURLOPT_POST301 1040
+// #endif
+// #ifndef CURLOPT_COPYPOSTFIELDS
+// #define CURLOPT_COPYPOSTFIELDS 1050
+// #endif
+// #ifndef CURLOPT_DIRLISTONLY
+// #define CURLOPT_DIRLISTONLY 1060
+// #endif
+// #ifndef CURLOPT_APPEND
+// #define CURLOPT_APPEND 1070
+// #endif
+// #ifndef CURLOPT_USE_SSL
+// #define CURLOPT_USE_SSL 1080
+// #endif
+// #ifndef CURLOPT_PROXY_TRANSFER_MODE
+// #define CURLOPT_PROXY_TRANSFER_MODE 1090
+// #endif
+// #ifndef CURLOPT_KEYPASSWD
+// #define CURLOPT_KEYPASSWD 1100
+// #endif
+// #ifndef CURLOPT_KRBLEVEL
+// #define CURLOPT_KRBLEVEL 1110
+// #endif
+// #ifndef CURLOPT_SSH_HOST_PUBLIC_KEY_MD5
+// #define CURLOPT_SSH_HOST_PUBLIC_KEY_MD5 1120
+// #endif
+// #ifndef CURLOPT_NEW_FILE_PERMS
+// #define CURLOPT_NEW_FILE_PERMS 1130
+// #endif
+// #ifndef CURLOPT_NEW_DIRECTORY_PERMS
+// #define CURLOPT_NEW_DIRECTORY_PERMS 1140
+// #endif
+// #ifndef CURLPROXY_SOCKS4A
+// #define CURLPROXY_SOCKS4A 1150
+// #endif
+// #ifndef CURLPROXY_SOCKS5_HOSTNAME
+// #define CURLPROXY_SOCKS5_HOSTNAME 1160
+// #endif
+// #ifndef CURLPROXY_SOCKS5_HOSTNAME
+// #define CURLPROXY_SOCKS5_HOSTNAME 1170
+// #endif
+// #ifndef CURLUSESSL_NONE
+// #define CURLUSESSL_NONE 1180
+// #endif
+// #ifndef CURLUSESSL_TRY
+// #define CURLUSESSL_TRY 1190
+// #endif
+// #ifndef CURLUSESSL_CONTROL
+// #define CURLUSESSL_CONTROL 1200
+// #endif
+// #ifndef CURLUSESSL_ALL
+// #define CURLUSESSL_ALL 1210
+// #endif
+// #ifndef CURLUSESSL_NONE
+// #define CURLUSESSL_NONE 1220
+// #endif
+
+
 private:
   void 
   _init_callbacks()
   {
+    //#if defined(LINUX) || defined(BSD)
+    callbacks[CURLOPT_SEEKFUNCTION] = scheme_null;
+    callbacks[CURLOPT_OPENSOCKETFUNCTION] = scheme_null;
+    callbacks_data[CURLOPT_SEEKDATA] = scheme_null;
+    callbacks_data[CURLOPT_OPENSOCKETDATA] = scheme_null;
+    //#endif
     callbacks[CURLOPT_WRITEFUNCTION] = scheme_null;
     callbacks[CURLOPT_READFUNCTION] = scheme_null;
-    callbacks[CURLOPT_IOCTLFUNCTION] = scheme_null;
-    callbacks[CURLOPT_SEEKFUNCTION] = scheme_null;
-    callbacks[CURLOPT_SOCKOPTFUNCTION] = scheme_null;
-    callbacks[CURLOPT_OPENSOCKETFUNCTION] = scheme_null;
+    callbacks[CURLOPT_IOCTLFUNCTION] = scheme_null;    
+    callbacks[CURLOPT_SOCKOPTFUNCTION] = scheme_null;    
     callbacks[CURLOPT_PROGRESSFUNCTION] = scheme_null;
     callbacks[CURLOPT_HEADERFUNCTION] = scheme_null;
     callbacks[CURLOPT_DEBUGFUNCTION] = scheme_null;
@@ -120,10 +184,8 @@ private:
     callbacks_data[CURLOPT_WRITEDATA] = scheme_null;
     callbacks_data[CURLOPT_READDATA] = scheme_null;
     callbacks_data[CURLOPT_HEADERDATA] = scheme_null;
-    callbacks_data[CURLOPT_IOCTLDATA] = scheme_null;
-    callbacks_data[CURLOPT_SEEKDATA] = scheme_null;
-    callbacks_data[CURLOPT_SOCKOPTDATA] = scheme_null;
-    callbacks_data[CURLOPT_OPENSOCKETDATA] = scheme_null;
+    callbacks_data[CURLOPT_IOCTLDATA] = scheme_null;    
+    callbacks_data[CURLOPT_SOCKOPTDATA] = scheme_null;    
     callbacks_data[CURLOPT_PROGRESSDATA] = scheme_null;
     callbacks_data[CURLOPT_DEBUGDATA] = scheme_null;
     callbacks_data[CURLOPT_SSL_CTX_DATA] = scheme_null;
@@ -303,10 +365,8 @@ _add_constants(Scheme_Env* env)
     Constant("CURLOPT-NOSIGNAL", CURLOPT_NOSIGNAL),
     Constant("CURLOPT-WRITEFUNCTION", CURLOPT_WRITEFUNCTION),
     Constant("CURLOPT-READFUNCTION", CURLOPT_READFUNCTION),
-    Constant("CURLOPT-IOCTLFUNCTION", CURLOPT_IOCTLFUNCTION),
-    Constant("CURLOPT-SEEKFUNCTION", CURLOPT_SEEKFUNCTION),
-    Constant("CURLOPT-SOCKOPTFUNCTION", CURLOPT_SOCKOPTFUNCTION),
-    Constant("CURLOPT-OPENSOCKETFUNCTION", CURLOPT_OPENSOCKETFUNCTION),
+    Constant("CURLOPT-IOCTLFUNCTION", CURLOPT_IOCTLFUNCTION),    
+    Constant("CURLOPT-SOCKOPTFUNCTION", CURLOPT_SOCKOPTFUNCTION),    
     Constant("CURLOPT-PROGRESSFUNCTION", CURLOPT_PROGRESSFUNCTION),
     Constant("CURLOPT-HEADERFUNCTION", CURLOPT_HEADERFUNCTION),
     Constant("CURLOPT-DEBUGFUNCTION", CURLOPT_DEBUGFUNCTION),
@@ -317,10 +377,8 @@ _add_constants(Scheme_Env* env)
     Constant("CURLOPT-WRITEDATA", CURLOPT_WRITEDATA),
     Constant("CURLOPT-READDATA", CURLOPT_READDATA),
     Constant("CURLOPT-HEADERDATA", CURLOPT_HEADERDATA),
-    Constant("CURLOPT-IOCTLDATA", CURLOPT_IOCTLDATA),
-    Constant("CURLOPT-SEEKDATA", CURLOPT_SEEKDATA),
-    Constant("CURLOPT-SOCKOPTDATA", CURLOPT_SOCKOPTDATA),
-    Constant("CURLOPT-OPENSOCKETDATA", CURLOPT_OPENSOCKETDATA),
+    Constant("CURLOPT-IOCTLDATA", CURLOPT_IOCTLDATA),    
+    Constant("CURLOPT-SOCKOPTDATA", CURLOPT_SOCKOPTDATA),    
     Constant("CURLOPT-PROGRESSDATA", CURLOPT_PROGRESSDATA),
     Constant("CURLOPT-DEBUGDATA", CURLOPT_DEBUGDATA),
     Constant("CURLOPT-SSL-CTX-DATA", CURLOPT_SSL_CTX_DATA),
@@ -526,7 +584,12 @@ _add_constants(Scheme_Env* env)
     Constant("CURLFORM-ARRAY", CURLFORM_ARRAY),
     Constant("CURLFORM-CONTENTHEADER", CURLFORM_CONTENTHEADER),
     Constant("CURLFORM-END", CURLFORM_END),
-
+    //#if defined(LINUX) || defined(BSD)
+    Constant("CURLOPT-SEEKFUNCTION", CURLOPT_SEEKFUNCTION),
+    Constant("CURLOPT-OPENSOCKETFUNCTION", CURLOPT_OPENSOCKETFUNCTION),
+    Constant("CURLOPT-SEEKDATA", CURLOPT_SEEKDATA),
+    Constant("CURLOPT-OPENSOCKETDATA", CURLOPT_OPENSOCKETDATA),
+    //#endif
     Constant("", 0),
   };
   return add_constants(env, constants, "spark-curl");
@@ -954,6 +1017,7 @@ spark_curl::_curl_easy_setopt(int argc, Scheme_Object** argv)
 	      }
 	    break;
 	  }
+	  //#if defined(LINUX) || defined(BSD)
 	case CURLOPT_SEEKFUNCTION:
 	  {
 	    if ((_last_error = ::curl_easy_setopt(curl, opt, 
@@ -970,13 +1034,13 @@ spark_curl::_curl_easy_setopt(int argc, Scheme_Object** argv)
 	      }
 	    break;
 	  }
-	case CURLOPT_SOCKOPTFUNCTION:
+	case CURLOPT_OPENSOCKETFUNCTION:
 	  {
 	    if ((_last_error = ::curl_easy_setopt(curl, opt, 
-						  _generic_curl_sockopt_callback))
+						 _generic_curl_opensocket_callback))
 		== CURLE_OK)
 	      {
-		_last_error = ::curl_easy_setopt(curl, CURLOPT_SOCKOPTDATA,
+		_last_error = ::curl_easy_setopt(curl, CURLOPT_OPENSOCKETDATA,
 						 reinterpret_cast<void*>(curl_wrapper));
 		if (_last_error == CURLE_OK)
 		  {
@@ -986,13 +1050,14 @@ spark_curl::_curl_easy_setopt(int argc, Scheme_Object** argv)
 	      }
 	    break;
 	  }
-	case CURLOPT_OPENSOCKETFUNCTION:
+	  //#endif
+	case CURLOPT_SOCKOPTFUNCTION:
 	  {
 	    if ((_last_error = ::curl_easy_setopt(curl, opt, 
-						 _generic_curl_opensocket_callback))
+						  _generic_curl_sockopt_callback))
 		== CURLE_OK)
 	      {
-		_last_error = ::curl_easy_setopt(curl, CURLOPT_OPENSOCKETDATA,
+		_last_error = ::curl_easy_setopt(curl, CURLOPT_SOCKOPTDATA,
 						 reinterpret_cast<void*>(curl_wrapper));
 		if (_last_error == CURLE_OK)
 		  {
@@ -1089,13 +1154,15 @@ spark_curl::_curl_easy_setopt(int argc, Scheme_Object** argv)
 	    */
 	    break;	   	   
 	  }
+	  //#if defined(LINUX) || defined(BSD)
+	case CURLOPT_SEEKDATA:
+	case CURLOPT_OPENSOCKETDATA:
+	  //#endif
 	case CURLOPT_WRITEDATA:
 	case CURLOPT_READDATA:
 	case CURLOPT_HEADERDATA:
-	case CURLOPT_IOCTLDATA:
-	case CURLOPT_SEEKDATA:
-	case CURLOPT_SOCKOPTDATA:
-	case CURLOPT_OPENSOCKETDATA:
+	case CURLOPT_IOCTLDATA:	
+	case CURLOPT_SOCKOPTDATA:	
 	case CURLOPT_PROGRESSDATA:
 	case CURLOPT_DEBUGDATA:
 	case CURLOPT_SSL_CTX_DATA:

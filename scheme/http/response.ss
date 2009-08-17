@@ -24,25 +24,27 @@
 	 
 	 (import (mime-types))
 
+	 (define crlf "\r\n")
+
 	 (define (make-response resource-uri version 
 				content-length content-mod) 
 	   (let ((out (open-output-string)))
 	     (fprintf out "~a 200 OK~a" 
 		      version 
-		      (crlf))
+		      crlf)
 	     (fprintf out "Date: ~a~a" 
 		      (date-str (gmt-date (current-seconds))) 
-		      (crlf))
+		      crlf)
 	     (fprintf out "Content-Type: ~a~a" 
 		      (content-type resource-uri)
-		      (crlf))
+		      crlf)
 	     (fprintf out "Content-Length: ~a~a" 
 		      content-length
-		      (crlf))
+		      crlf)
 	     (fprintf out "Last-Modified: ~a~a"
 		      (date-str (gmt-date content-mod))
-		      (crlf))
-	     (fprintf out "~a" (crlf))
+		      crlf)
+	     (fprintf out "~a" crlf)
 	     (flush-output out)
 	     (get-output-string out)))
 
@@ -53,26 +55,23 @@
 	     (fprintf out "~a ~a~a" 
 		      version 
 		      error-message
-		      (crlf))
+		      crlf)
 	     (fprintf out "Date: ~a~a" 
 		      (date-str (gmt-date (current-seconds))) 
-		      (crlf))
+		      crlf)
 	     (fprintf out "Content-Type: text/html~a" 
-		      (crlf))
+		      crlf)
 	     (fprintf out "Content-Length: ~a~a" 
 		      (string-length error-message)
-		      (crlf))
-	     (fprintf out "~a" (crlf))
+		      crlf)
+	     (fprintf out "~a" crlf)
 	     (fprintf out "~a ~a ~a - ~a ~a" 
 		      version
 		      error-code
 		      (error->string error-code)
 		      error-message
-		      (crlf))
+		      crlf)
 	     (get-output-string out)))
-
-
-	 (define (crlf) (string #\return #\linefeed))
 
 	 (define (date-str d) 
 	   (let ((out (open-output-string)))

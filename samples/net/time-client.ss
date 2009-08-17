@@ -5,8 +5,6 @@
 
 (define (on-connect connector client-socket)
   (socket-send client-socket "GET TIME"))
-;  (print (socket-recv client-socket 10)) (newline)
- ; (set! cs client-socket))
 
 (define (on-write connector client-socket)
   (print (socket-recv client-socket 10)) (newline)
@@ -22,7 +20,6 @@
 				       (address "127.0.0.1" 7070))))
 (connector-on-connect! time-client on-connect)
 (connector-on-write! time-client on-write)
-;(connector-on-read! time-client on-read)
 (connector-on-timeout! time-client on-timeout)
 (connector-open time-client (list 10 0))
 (let loop ()

@@ -21,6 +21,10 @@
 #ifndef _SPARK_H_
 #define _SPARK_H_
 
+#ifdef linux
+#define LINUX
+#endif
+
 #define SPARK_MAJOR_VERSION 1
 #define SPARK_MINOR_VERSION 0 
 #define SPARK_MINOR_MINOR_VERSION 0

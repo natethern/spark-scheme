@@ -1485,7 +1485,11 @@ spark_fltk_draw::_fl_create_offscreen(int argc, Scheme_Object** argv)
   spark::Utils::int_from_scheme_long(argv[0], w);
   int h = 0;
   spark::Utils::int_from_scheme_long(argv[1], h);
+#if defined(LINUX) || defined(BSD)
   Fl_Offscreen fo = fl_create_offscreen(w, h);
+#else
+  Fl_Offscreen fo = 0;
+#endif
   if (fo)
     {
       Offscreen_holder oh = Offscreen_holder::instance();
@@ -1506,7 +1510,11 @@ spark_fltk_draw::_fl_create_offscreen_with_alpha(int argc, Scheme_Object** argv)
   spark::Utils::int_from_scheme_long(argv[0], w);
   int h = 0;
   spark::Utils::int_from_scheme_long(argv[1], h);
+#if defined(LINUX) || defined(BSD)
   Fl_Offscreen fo = fl_create_offscreen(w, h);
+#else
+  Fl_Offscreen fo = 0;
+#endif
   if (fo)
     {
       Offscreen_holder oh = Offscreen_holder::instance();

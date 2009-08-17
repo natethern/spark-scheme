@@ -1,14 +1,21 @@
 (import (net) (reactor))
 
 (define (on-client-connect acceptor client-conn)
-  (printf "Client connected.~n") (flush-output)
-  (let ((client-socket (car client-conn)))
-    (acceptor-add-watch acceptor client-socket 'for-read)))
+  (printf "Client connected. ")
+  (acceptor-add-watch acceptor (connection-socket client-conn) 'for-read))
+
+(define (read-request client-socket)
+  (let ((buff-sz 1))
+    (socket-non-blocking! client-socket #t)
+    (let loop ((str (socket-recv client-socket buff-sz))
+	       (req ""))
+      (if (> (string-length str) 0)
+	  (loop (socket-recv client-socket buff-sz)
+		(string-append req str))
+	  req))))
     
 (define (on-client-read acceptor client-socket)
-  (printf "Client requesting current time ... ~n")
-  (flush-output)
-  (newline)
+  (printf "~a ~n" (read-request client-socket))
   (let ((dt (seconds->date (current-seconds)))
 	(out (open-output-string)))
     (fprintf out "~a:~a:~a" 
@@ -20,8 +27,7 @@
   (socket-close client-socket))
 
 (define (on-server-timeout acceptor)
-  (printf "Waiting for client, timedout.~n")
-  (flush-output))
+  (printf "Waiting for client, timedout.~n"))
 
 (define time-server (socket-acceptor))
 (acceptor-port! time-server 7070)

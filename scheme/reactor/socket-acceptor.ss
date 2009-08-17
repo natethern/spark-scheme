@@ -53,7 +53,7 @@
 					   on-server-timeout
 					   ;; end of callbacks.
 					   reactor
-					   watch-for-error))					
+					   watch-for-error))
 
 	 ;; Creates and initializes a new socket-acceptor object.
 	 ;; Takes two optional arguments:
