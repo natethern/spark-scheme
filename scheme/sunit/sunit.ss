@@ -1,5 +1,5 @@
 ;; A unit test framework.
-;; Copyright (C) 2007, 2008  Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 (library sunit
 
-	 (export make-test sunit-test sunit-tests sunit-suite)
+	 (export make-test sunit-test sunit-tests sunit-suite assert)
 
 	 (define-struct test (t r))
 
@@ -37,25 +37,27 @@
 			    (vector? expected-result))
 			(set! cmpr equal?)
 			(set! cmpr eq?))))
-	      (if (not (cmpr r expected-result))
-		  (begin
-		    (if verbose
-			(printf "~a failed with result ~a. Expected result was ~a.~n" t r expected-result))
-		    #f)
-		  (begin
-		    (if verbose
-			(printf "~a succeeded with  result ~a.~n" t r))
-		    #t))
+	      (cond ((not (cmpr r expected-result))
+		     (if verbose
+			 (printf "~a failed with result ~a. Expected result was ~a.~n" 
+				 t r expected-result))
+		     #f)
+		    (else
+		     (if verbose
+			 (printf "~a succeeded with  result ~a.~n" t r))
+		     #t))
 	      (catch (lambda (x)
-		       (if (eq? expected-result 'error)
-			   (begin
-			     (if verbose
-				 (printf "~a succeeded with  result ~a.~n" t x))
-			     #t)
-			   (begin
-			     (if verbose
-				 (printf "~a failed with exception ~a. Expected result was ~a.~n" t x expected-result))
-			     #f)))))))
+		       (cond ((eq? expected-result 'error)
+			      (if verbose
+				  (printf "~a succeeded with  result ~a.~n" 
+					  t x))
+			      #t)
+			     (else
+			      (if verbose
+				  (printf 
+				   "~a failed with exception ~a. Expected result was ~a.~n" 
+				   t x expected-result))
+			      #f)))))))
 
 	 (define (sunit-tests title tests . args)
 	   (let ((verbose #f) (cmpr null))
@@ -75,7 +77,8 @@
 			   (set! s (add1 s)))
 		       (set! i (add1 i))
 		       (loop))))
-	       (printf "Results for ~a tests: ~a run, ~a succeeded, ~a failed.~n" title len s (- len s))
+	       (printf "Results for ~a tests: ~a run, ~a succeeded, ~a failed.~n" 
+		       title len s (- len s))
 	       (list len s (- len s)))))
 
 	 (define (sunit-suite title tests . args)
@@ -98,4 +101,16 @@
 		      (set! f (+ f (car r)))))
 	     (printf "Total tests: ~a~nSucceeded: ~a~nFailed: ~a~n"
 		     total-ran s f)
-	     (list total-ran s f))))
+	     (list total-ran s f)))
+	 
+	 (define assert
+	   (case-lambda
+	    ((test-expr expected-res)
+	     (assert test-expr expected-res #f ()))
+	    ((test-expr expected-res verbose)
+	     (assert test-expr expected-res verbose ()))
+	    ((test-expr expected-res verbose cmpr)
+	     (let ((test (make-test test-expr expected-res)))
+	       (if (not (sunit-test test  verbose cmpr))
+		   (raise 'assert-failed)
+		   #t))))))
