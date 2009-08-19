@@ -61,6 +61,8 @@
 	 ;; E.g.: (web-server (list 'port 8080 'session-timeout 10))
 	 (define web-server
 	   (case-lambda
+	    (()
+	     (web-server (list 'port 80)))
 	    ((conf)
 	     (web-server conf (current-output-port)))
 	    ((conf log-port)
