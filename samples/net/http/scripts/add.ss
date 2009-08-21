@@ -19,13 +19,21 @@
     ((html 'text))))
 
 (define (add new-uri state)
-  (let* ((s1 (hash-table-get state "num1" null))
-	 (s2 (hash-table-get state "num2" null))
-	 (res (number->string (+ (string->number s1)
-				 (string->number s2))))
-	 (html (sgml `(html
-		       (body
-			(b ,res))))))
-    ((html 'text))))
+  (let ((s1 (http-value state "num1"))
+	(s2 (http-value state "num2")))
+
+    ;; If a value is not a number, go back to
+    ;; the appropriate page and request a new value.
+    (if (not (number? (string->number s1)))
+	(http-call get-num1))
+    (if (not (number? (string->number s2)))
+	(http-call get-num2))
+
+    (let* ((res (number->string (+ (string->number s1)
+				   (string->number s2))))
+	   (html (sgml `(html
+			 (body
+			  (b ,res))))))
+      ((html 'text)))))
 
 (list get-num1 get-num2 add)

@@ -60,16 +60,37 @@
 		  (procs-len (length procs)))
 	     (let ((proc-count (add1 p-count)))
 	       (let ((state (session-s-state sess)) 
-		     (res-html null))
+		     (res-html null) (ret null))
 		 (hash-table-map state-to-add 
 				 (lambda (k v) (hash-table-put! state k v)))
-
-		 (set! res-html ((list-ref procs (sub1 proc-count))
-				 (make-session-url url id proc-count) 
-				 state))
-		 (if (>= proc-count procs-len)
-		     (cons 'done res-html))
-		 (cons 'next res-html)))))
+		 (try
+		  (set! res-html ((list-ref procs (sub1 proc-count))
+				  (make-session-url url id proc-count) 
+				  state))
+		  (catch (lambda (ex)
+			   (cond ((procedure? ex)
+				  (set! ret 
+					(session-execute-procedure url procs
+								   sess-id 
+								   (find-proc-index ex procs)
+								   state-to-add
+								   sessions)))
+				 (else (raise ex))))))
+		 (if (null? ret)
+		     (if (>= proc-count procs-len)
+			 (set! ret (cons 'done res-html))
+			 (set! ret (cons 'next res-html))))
+		 ret))))
+	 
+	 (define (find-proc-index proc procs-list)
+	   (let ((ret 0))
+	     (let loop ((plist procs-list) (i 0))
+	       (cond ((not (null? plist))
+		      (cond ((eq? proc (car plist))
+			     (set! ret i)
+			     (loop null i))
+			    (else (loop (cdr plist) (add1 i)))))))
+	     ret))
 
 	 (define (next-session-id)
 	   (set! *session-id* (add1 *session-id*))
