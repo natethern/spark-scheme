@@ -41,11 +41,11 @@
 	   (let* ((sess-id (next-session-id))
 		  (sess (make-session-s sess-id
 					(make-session-url script-url sess-id 0)
-					(make-hash-table 'equal)
+					(make-default-session-state sess-id)
 					(current-seconds)))
-		  (id (session-s-id sess)))
-	     (hash-table-put! sessions id sess)
-	     id))
+		  (state (make-default-session-state sess-id)))
+	     (hash-table-put! sessions sess-id sess)
+	     sess-id))
 
 	 (define (session-destroy id sessions)
 	   (hash-table-remove! sessions id))
@@ -60,7 +60,7 @@
 		  (procs-len (length procs)))
 	     (let ((proc-count (add1 p-count)))
 	       (let ((state (session-s-state sess)) 
-		     (res-html null) (ret null))
+		     (res-html null))
 		 (hash-table-map state-to-add 
 				 (lambda (k v) (hash-table-put! state k v)))
 		 (try
@@ -69,18 +69,27 @@
 				  state))
 		  (catch (lambda (ex)
 			   (cond ((procedure? ex)
-				  (set! ret 
+				  (set! proc-count (find-proc-index ex procs))
+				  (set! res-html 
 					(session-execute-procedure url procs
 								   sess-id 
-								   (find-proc-index ex procs)
+								   proc-count
 								   state-to-add
 								   sessions)))
 				 (else (raise ex))))))
-		 (if (null? ret)
-		     (if (>= proc-count procs-len)
-			 (set! ret (cons 'done res-html))
-			 (set! ret (cons 'next res-html))))
-		 ret))))
+		 (if (>= proc-count procs-len)
+		     (if (not (keep-alive? state))
+			 (session-destroy id sessions)))
+		 res-html))))
+
+	 (define (keep-alive? state)
+	   (hash-table-get state "__keep_alive__" #f))
+
+	 (define (make-default-session-state id)
+	   (let ((state (make-hash-table 'equal)))
+	     (hash-table-put! state "__sesssion_id__" id)
+	     (hash-table-put! state "__keep_alive__" #f)
+	     state))
 	 
 	 (define (find-proc-index proc procs-list)
 	   (let ((ret 0))
@@ -100,11 +109,9 @@
 	   (if (= id -1) 
 	       (set! id (session-create url sessions)))
 	   (let ((sess (hash-table-get sessions id null)))
-	     (if (null? sess) 
-		 (raise "null session")
-		 (begin
-		  (set-session-s-last-access! sess (current-seconds))
-		  sess))))
+	     (cond ((null? sess) (raise "null session"))
+		   (else (set-session-s-last-access! sess (current-seconds))
+			 sess))))
 
 	 (define (make-session-url url sess-id proc-count)
 	   (let ((out (open-output-string)))

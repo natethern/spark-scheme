@@ -46,11 +46,11 @@
 	     (cond
 	      ((eq? type 'script)
 	       (let ((ids (parse-session-info sess-info)))
-		 (cdr (execute-resource res root-uri 
-					(list-ref ids 0)
-					(list-ref ids 1)
-					(http-request-data http-request)
-					session))))
+		 (execute-resource res root-uri 
+				   (list-ref ids 0)
+				   (list-ref ids 1)
+				   (http-request-data http-request)
+				   session)))
 	      (else res))))
 
 	 (define (load-resource self uri 
