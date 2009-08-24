@@ -36,8 +36,8 @@
   (printf "~a~n" response) (flush-output))
 
 ;; Set the hooks.
-(web-server-hook! httpd 'before-handle-request client-timeout-hook)
-(web-server-hook! httpd 'before-send-response reponse-hook)
+;(web-server-hook! httpd 'before-handle-request client-timeout-hook)
+;(web-server-hook! httpd 'before-send-response reponse-hook)
 
 (define conn-count 0)
 

@@ -31,8 +31,8 @@
 				   state
 				   last-access))
 	 (define *session-id* 0)
-
 	 (define *vars-sep* "?")
+	 (define *session-id-trash* ())
 
 	 (define (session-last-access session)
 	   (session-s-last-access session))
@@ -48,7 +48,8 @@
 	     sess-id))
 
 	 (define (session-destroy id sessions)
-	   (hash-table-remove! sessions id))
+	   (hash-table-remove! sessions id)
+	   (set! *session-id-trash* (cons id *session-id-trash*)))
 	 
 	 (define (session-execute-procedure url procs 
 					    sess-id
@@ -93,14 +94,32 @@
 	     ret))
 
 	 (define (next-session-id)
-	   (set! *session-id* (add1 *session-id*))
-	   *session-id*)
+	   (let ((id null))
+	     (if (not (null? *session-id-trash*))
+		 (set! id (next-session-id-from-trash)))
+	     (cond ((null? id)
+		    (set! *session-id* (add1 *session-id*))
+		    (set! id *session-id*)))
+	     id))
+
+	 (define *trash-sem* (make-semaphore 1))
+
+	 (define (next-session-id-from-trash)
+	   (semaphore-wait *trash-sem*)
+	   (cond ((not (null? *session-id-trash*))
+		  (let ((id (car *session-id-trash*)))
+		    (set! *session-id-trash* (cdr *session-id-trash*))
+		    (semaphore-post *trash-sem*)
+		    id))
+		 (else 
+		  (semaphore-post *trash-sem*)
+		  null)))
 
 	 (define (find-session id url sessions)
 	   (if (= id -1) 
 	       (set! id (session-create url sessions)))
 	   (let ((sess (hash-table-get sessions id null)))
-	     (cond ((null? sess) (raise "null session"))
+	     (cond ((null? sess) (raise "Invalid session"))
 		   (else (set-session-s-last-access! sess (current-seconds))
 			 sess))))
 

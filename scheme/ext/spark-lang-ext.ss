@@ -117,10 +117,11 @@
 	(define-syntax atomic
 	  (syntax-rules ()
 	    ((atomic block)
-	     (begin
+	     (let ((res null))
 	       (semaphore-wait __sema__)
-	       block
-	       (semaphore-post __sema__)))
+	       (set! res block)
+	       (semaphore-post __sema__)
+	       res))
 	    ((atomic name block)
 	     (let ((sema (hash-table-get __sema_map__ name null)))
 	       (cond ((null? sema)
@@ -128,9 +129,11 @@
 		      (semaphore-wait __sema_map_lock__)
 		      (hash-table-put! __sema_map__ name sema)
 		      (semaphore-post __sema_map_lock__)))
-	       (semaphore-wait sema)
-	       block
-	       (semaphore-post sema)))))	
+	       (let ((res null))
+		 (semaphore-wait sema)
+		 (set! res block)
+		 (semaphore-post sema)
+		 res)))))
 	
 	(provide try
 		 while
