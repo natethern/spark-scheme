@@ -98,22 +98,20 @@
 	     (if (not (null? *session-id-trash*))
 		 (set! id (next-session-id-from-trash)))
 	     (cond ((null? id)
-		    (set! *session-id* (add1 *session-id*))
-		    (set! id *session-id*)))
+		    (set! *session-id* 
+			  (begin (set! id (add1 *session-id*))
+				 id))))
 	     id))
 
-	 (define *trash-sem* (make-semaphore 1))
-
 	 (define (next-session-id-from-trash)
-	   (semaphore-wait *trash-sem*)
 	   (cond ((not (null? *session-id-trash*))
-		  (let ((id (car *session-id-trash*)))
-		    (set! *session-id-trash* (cdr *session-id-trash*))
-		    (semaphore-post *trash-sem*)
+		  (let ((id null))
+		    (set! *session-id-trash* 
+			  (begin 
+			    (set! id (car *session-id-trash*))
+			    (cdr *session-id-trash*)))
 		    id))
-		 (else 
-		  (semaphore-post *trash-sem*)
-		  null)))
+		 (else null)))
 
 	 (define (find-session id url sessions)
 	   (if (= id -1) 

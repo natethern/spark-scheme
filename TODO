@@ -1,3 +1,4 @@
-13-AUG-2009
+24-AUG-2009
 
+ * Use AVL tree (Desktop/avl.ss) to store web server sessions.
 
