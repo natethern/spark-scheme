@@ -24,7 +24,7 @@
 		 session-destroy
 		 session-last-access)
 
-	 (import (http-globals))
+	 (import (http-globals) (http-session-util))
 
 	 (define-struct session-s (id 
 				   url 
@@ -78,19 +78,10 @@
 								   sessions)))
 				 (else (raise ex))))))
 		 (if (>= proc-count procs-len)
-		     (if (not (keep-alive? state))
+		     (if (not (http-keep-alive? state))
 			 (session-destroy id sessions)))
 		 res-html))))
 
-	 (define (keep-alive? state)
-	   (hash-table-get state "__keep_alive__" #f))
-
-	 (define (make-default-session-state id)
-	   (let ((state (make-hash-table 'equal)))
-	     (hash-table-put! state "__sesssion_id__" id)
-	     (hash-table-put! state "__keep_alive__" #f)
-	     state))
-	 
 	 (define (find-proc-index proc procs-list)
 	   (let ((ret 0))
 	     (let loop ((plist procs-list) (i 0))

@@ -1,5 +1,5 @@
 ;; Compiles all spark modules.
-;; Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
  
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -107,6 +107,7 @@
 
 (load-relative "http/url-encode.ss")
 (load-relative "http/globals.ss")
+(load-relative "http/session-util.ss")
 (load-relative "http/session.ss")
 (load-relative "http/request-parser.ss")
 (load-relative "http/resource-loader.ss")
@@ -196,6 +197,7 @@
 ;; http
 (print (compile-file "http/url-encode.ss")) (newline)
 (print (compile-file "http/globals.ss")) (newline)
+(print (compile-file "http/session-util.ss")) (newline)
 (print (compile-file "http/session.ss")) (newline)
 (print (compile-file "http/request-parser.ss")) (newline)
 (print (compile-file "http/resource-loader.ss")) (newline)

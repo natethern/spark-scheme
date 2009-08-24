@@ -23,10 +23,10 @@
 
 (library http
 	 
-	 (import ;;(net)
-		 ;;(reactor)
-		 (web-server)
-		 (mime-types))
+	 (import (web-server)
+		 (mime-types)
+		 (http-session-util))
 
 	 (export (all-from web-server)
-		 (all-from mime-types)))
+		 (all-from mime-types)
+		 (all-from http-session-util)))

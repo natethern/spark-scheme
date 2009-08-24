@@ -36,9 +36,7 @@
 		 web-server-configuration
 		 web-server-configuration!
 		 web-server-hook!
-		 write-log
-		 http-value http-value! 
-		 http-call http-keep-alive!)
+		 write-log)		 
 
 	 (define-struct web-server-s (configuration
 				      resource-loader
@@ -280,25 +278,6 @@
 		   (if (not (null? hook-proc))
 		       (set! ret (apply hook-proc (cons self hook-args))))))
 	     ret))
-
-	 (define http-value
-	   (case-lambda
-	    ((state name) (http-value state name null))
-	    ((state name def-value) (hash-table-get state name def-value))))
-
-	 (define (http-value! state name value)
-	   (hash-table-put! state name value))	 
-
-	 (define (http-call proc)
-	   (if (not (procedure? proc))
-	       (raise "http-call failed. Not a procedure.")
-	       (raise proc)))
-
-	 (define http-keep-alive!
-	   (case-lambda
-	    ((state) (http-keep-alive! state #t))
-	    ((state flag)
-	     (hash-table-put! state "__keep_alive__" flag))))
 
 	 (define (sessions-gc-check self curr-secs
 				    session-timeout-secs)

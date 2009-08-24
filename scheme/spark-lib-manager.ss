@@ -1,5 +1,5 @@
 ;; Library manager. 
-;; Copyright (C) 2007, 2008  Vijay Mathew Pandyalakal
+;; Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 	(define (load-http-libraries)
 	  (load (string-append spark-home "/scheme/" "http/" folder "url-encode" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "globals" ext))
+	  (load (string-append spark-home "/scheme/" "http/" folder "session-util" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "session" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "request-parser" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "resource-loader" ext))
