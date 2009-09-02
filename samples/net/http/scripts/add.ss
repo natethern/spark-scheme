@@ -30,7 +30,7 @@
 	(http-call get-num2))
 
     ;; Make this session re-usable.
-    (http-keep-alive! http)
+    ;(http-keep-alive! http)
 
     (let* ((res (number->string (+ (string->number s1)
 				   (string->number s2))))

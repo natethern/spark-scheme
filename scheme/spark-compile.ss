@@ -107,11 +107,11 @@
 
 (load-relative "http/url-encode.ss")
 (load-relative "http/globals.ss")
+(load-relative "http/mime-types.ss")
 (load-relative "http/session-util.ss")
 (load-relative "http/session.ss")
 (load-relative "http/request-parser.ss")
 (load-relative "http/resource-loader.ss")
-(load-relative "http/mime-types.ss")
 (load-relative "http/response.ss")
 (load-relative "http/web-server.ss")
 (load-relative "http/http.ss")

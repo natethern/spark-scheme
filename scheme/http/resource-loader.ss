@@ -20,39 +20,70 @@
 
 (library http-resource-loader
 
-	 (export resource-loader resource-loader-load)
+	 (export resource-loader 
+		 resource-loader-load
+		 resource-content
+		 resource-content-type
+		 resource-content-length
+		 resource-content-last-modified)
 
 	 (import (http-session) 
 		 (http-request-parser)
-		 (http-globals))
+		 (http-globals)
+		 (mime-types))
 
 	 (define-struct resource-loader-s (script-cache))
+	 (define-struct resource-s (content 
+				    content-type
+				    content-length
+				    content-last-modified))
 
 	 (define (resource-loader)
 	   (make-resource-loader-s (make-hash-table 'equal)))
 
+	 ;; Returns an instance of resource-s
 	 (define (resource-loader-load self web-server-conf
 				       http-request session)
 	   (let* ((uri (normalize-uri (http-request-uri http-request)))
 		  (uri-data (parse-uri uri))
 		  (root-uri (list-ref uri-data 0))
 		  (sess-info (list-ref uri-data 1))
-		  (res null)
 		  (type (find-res-type root-uri
 				       (hash-table-get web-server-conf 
-						       'script-ext)))
-		  (res null))
-	     (set! res (load-resource self root-uri type web-server-conf))
-	     (cond
-	      ((eq? type 'script)
-	       (let ((ids (parse-session-info sess-info)))
-		 (execute-resource res root-uri 
-				   (list-ref ids 0)
-				   (list-ref ids 1)
-				   (http-request-data http-request)
-				   session)))
-	      (else res))))
+						       'script-ext))))
+	     (let-values (((sz res) 
+			   (load-resource self root-uri type web-server-conf)))
+	       (cond
+		((eq? type 'script)
+		 (let* ((ids (parse-session-info sess-info))
+			(content (execute-resource res root-uri 
+						   (list-ref ids 0)
+						   (list-ref ids 1)
+						   (http-request-data http-request)
+						   session)))
+		   (make-resource-s content 
+				    (string-length content)
+				    "text/html"
+				    (current-seconds))))
+		(else (make-resource-s res
+				       (content-type uri)
+				       sz
+				       (file-or-directory-modify-seconds uri)))))))
 
+	 (define (resource-content r)
+	   (resource-s-content r))
+	 (define (resource-content-type r)
+	   (resource-s-content-type r))
+	 (define (resource-content-length r)
+	   (resource-s-content-length r))
+	 (define (resource-content-last-modified r)
+	   (resource-s-content-last-modified r))
+
+	 (define (content-type uri) 
+	   (let ((mt (find-mime-type uri)))
+	     (if (not mt) "text/html"
+		 (cdr mt))))
+	 
 	 (define (load-resource self uri 
 				type web-server-conf)
 	   (case type
@@ -61,8 +92,9 @@
 	      (let ((cached 
 		     (hash-table-get (resource-loader-s-script-cache self)
 				     uri null)))
-		(if (not (null? cached)) cached
-		    (read-fresh-script self uri))))))
+		(if (not (null? cached)) 
+		    (values 0 cached)
+		    (values 0 (read-fresh-script self uri)))))))
 
 	 (define (read-fresh-file uri web-server-conf)	   
 	   (let ((sz (file-size uri)))		 
@@ -75,7 +107,7 @@
 		(catch (lambda (ex) (set! err ex))))
 	       (if (not (null? file)) (close-input-port file))
 	       (if (not (null? err)) (raise err))
-	       data)))
+	       (values sz data))))
 	 
 	 (define (read-fresh-script self uri)
 	   (let ((ret (load uri)))

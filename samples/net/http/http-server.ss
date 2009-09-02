@@ -1,5 +1,6 @@
 (import (net)
-	(http))
+	(http)
+	(http-response))
 	
 (define httpd (web-server (list 'port 8080
 				'session-timeout (* 2 60))))
@@ -28,16 +29,19 @@
 		 (catch (lambda (error)
 			  (write-log web-server-obj
 				     '("Error: (socket-close): ~a."
-				       error)))))))))
-    #t))
+				       error))))))))))
+  #t)
 
 ;; A hook that will be executed before sending each response.
 (define (reponse-hook web-server-obj client-connection response)
-  (printf "~a~n" response) (flush-output))
+  (response-header-value! (response-headers response) 
+			  "Cache-Control"
+			  "max-age=3600")
+  #t)
 
 ;; Set the hooks.
-;(web-server-hook! httpd 'before-handle-request client-timeout-hook)
-;(web-server-hook! httpd 'before-send-response reponse-hook)
+(web-server-hook! httpd 'before-handle-request client-timeout-hook)
+(web-server-hook! httpd 'before-send-response reponse-hook)
 
 (define conn-count 0)
 

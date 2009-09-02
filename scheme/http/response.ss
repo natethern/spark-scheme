@@ -20,58 +20,92 @@
 
 (library http-response
 	 
-	 (export make-response make-error-response)
+	 (export make-response 
+		 make-error-response
+		 response-status-line
+		 response-status-line!
+		 response-headers
+		 response-headers!
+		 response-body
+		 response-body!
+		 response-header-value
+		 response-header-value!
+		 response->string)
 	 
-	 (import (mime-types))
-
+	 (define-struct response-s (status-line
+				    headers
+				    body))
 	 (define crlf "\r\n")
 
-	 (define (make-response resource-uri version 
-				content-length content-mod) 
-	   (let ((out (open-output-string)))
-	     (fprintf out "~a 200 OK~a" 
-		      version 
-		      crlf)
-	     (fprintf out "Date: ~a~a" 
-		      (date-str (gmt-date (current-seconds))) 
-		      crlf)
-	     (fprintf out "Content-Type: ~a~a" 
-		      (content-type resource-uri)
-		      crlf)
-	     (fprintf out "Content-Length: ~a~a" 
-		      content-length
-		      crlf)
-	     (fprintf out "Last-Modified: ~a~a"
-		      (date-str (gmt-date content-mod))
-		      crlf)
-	     (fprintf out "~a" crlf)
-	     (flush-output out)
-	     (get-output-string out)))
+	 (define (make-response version 
+				content
+				content-length 
+				content-type
+				content-mod)
+	   (let ((headers (make-hash-table 'equal))
+		 (status-line (open-output-string)))
+	     (fprintf status-line "~a 200 OK" version)
+	     (hash-table-put! headers "Date"
+			      (date-str (gmt-date (current-seconds))))
+	     (hash-table-put! headers "Content-Type" content-type)
+	     (hash-table-put! headers "Content-Length"
+			      content-length)
+	     (hash-table-put! headers "Last-Modified"
+			      (date-str (gmt-date content-mod)))
+	     (make-response-s (get-output-string status-line)
+			      headers content)))
 
 	 (define (make-error-response error-message 
 				      error-code 
 				      version)
-	   (let ((out (open-output-string)))
-	     (fprintf out "~a ~a~a" 
+	   (let ((headers (make-hash-table 'equal))
+		 (status-line (open-output-string)))
+	     (fprintf status-line "~a ~a ~a" 
 		      version 
-		      error-message
-		      crlf)
-	     (fprintf out "Date: ~a~a" 
-		      (date-str (gmt-date (current-seconds))) 
-		      crlf)
-	     (fprintf out "Content-Type: text/html~a" 
-		      crlf)
-	     (fprintf out "Content-Length: ~a~a" 
-		      (string-length error-message)
-		      crlf)
-	     (fprintf out "~a" crlf)
-	     (fprintf out "~a ~a ~a - ~a ~a" 
-		      version
 		      error-code
-		      (error->string error-code)
-		      error-message
-		      crlf)
-	     (get-output-string out)))
+		      error-message)
+	     (hash-table-put! headers "Date"
+			      (date-str (gmt-date (current-seconds))))
+	     (hash-table-put! headers "Content-Type" "text/html")
+	     (hash-table-put! headers "Content-Length"
+			      (string-length error-message))
+	     (make-response-s (get-output-string status-line)
+			      headers error-message)))
+
+	 (define (response-status-line r) 
+	   (response-s-status-line r))
+	 (define (response-status-line! r s)
+	   (set-response-s-status-line! r s))
+	 (define (response-headers r) 
+	   (response-s-headers r))
+	 (define (response-headers! r h)
+	   (set-response-s-headers! r h))
+	 (define (response-body r)
+	   (response-s-body r))
+	 (define (response-body! r b)
+	   (set-response-s-body! r b))
+	 (define (response-header-value headers key)
+	   (hash-table-get headers key))
+	 (define (response-header-value! headers key value)
+	   (hash-table-put! headers key value))
+
+	 (define response->string
+	   (case-lambda
+	    ((resp)
+	     (response->string resp #f))
+	    ((resp with-body)
+	     (let ((out (open-output-string)))
+	       (fprintf out "~a~a"
+			(response-s-status-line resp)
+			crlf)
+	       (hash-table-for-each 
+		(response-s-headers resp)
+		(lambda (k v)
+		  (fprintf out "~a: ~a~a" k v crlf)))
+	       (fprintf out "~a" crlf)
+	       (if with-body
+		   (fprintf out "~a" (response-s-body resp)))
+	       (get-output-string out)))))
 
 	 (define (date-str d) 
 	   (let ((out (open-output-string)))
@@ -88,11 +122,6 @@
 	 (define (gmt-date secs)
 	   (let ((d (seconds->date secs)))
 	     (seconds->date (- secs (date-time-zone-offset d)))))
-
-	 (define (content-type uri) 
-	   (let ((mt (find-mime-type uri)))
-	     (if (not mt) "text/html"
-		 (cdr mt))))
 
 	 (define (week-day->string wd)
 	   (case wd

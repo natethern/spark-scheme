@@ -32,7 +32,6 @@
 				   last-access))
 	 (define *session-id* 0)
 	 (define *vars-sep* "?")
-	 (define *session-id-trash* ())
 
 	 (define (session-last-access session)
 	   (session-s-last-access session))
@@ -48,8 +47,7 @@
 	     sess-id))
 
 	 (define (session-destroy id sessions)
-	   (hash-table-remove! sessions id)
-	   (set! *session-id-trash* (cons id *session-id-trash*)))
+	   (hash-table-remove! sessions id))
 	 
 	 (define (session-execute-procedure url procs 
 					    sess-id
@@ -95,23 +93,9 @@
 
 	 (define (next-session-id)
 	   (let ((id null))
-	     (if (not (null? *session-id-trash*))
-		 (set! id (next-session-id-from-trash)))
-	     (cond ((null? id)
-		    (set! *session-id* 
-			  (begin (set! id (add1 *session-id*))
-				 id))))
+	     (set! *session-id* (+ *session-id* 1))
+	     (set! id *session-id*)
 	     id))
-
-	 (define (next-session-id-from-trash)
-	   (cond ((not (null? *session-id-trash*))
-		  (let ((id null))
-		    (set! *session-id-trash* 
-			  (begin 
-			    (set! id (car *session-id-trash*))
-			    (cdr *session-id-trash*)))
-		    id))
-		 (else null)))
 
 	 (define (find-session id url sessions)
 	   (if (= id -1) 

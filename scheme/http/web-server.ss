@@ -43,7 +43,9 @@
 				      sessions
 				      server-socket
 				      hooks
-				      log-port))	 
+				      log-port))
+
+	 (define *HTTP-VERSION* "HTTP/1.0")
 
 	 ;; (list) -> web-server
 	 ;; Creates a new web-server object. The list argument
@@ -232,12 +234,18 @@
 	 (define (handle-request self client-conn http-request)
 	   (if (invoke-hook self 'before-handle-request
 			    (list client-conn http-request))
-	       (send-response self client-conn
-			      (loader::resource-loader-load
-			       (web-server-s-resource-loader self)
-			       (web-server-s-configuration self)
-			       http-request
-			       (web-server-s-sessions self)))))
+	       (let* ((content (loader::resource-loader-load
+				(web-server-s-resource-loader self)
+				(web-server-s-configuration self)
+				http-request
+				(web-server-s-sessions self)))
+		      (response (response::make-response
+				 *HTTP-VERSION*
+				 (loader::resource-content content)
+				 (loader::resource-content-length content)
+				 (loader::resource-content-type content)
+				 (loader::resource-content-last-modified content))))
+		 (send-response self client-conn response))))
 
 	 (define (return-error self
 			       client-conn
@@ -248,15 +256,18 @@
 			   (response::make-error-response
 			    error-message
 			    500 
-			    "HTTP/1.0"))
+			    *HTTP-VERSION*))
 	    (catch (lambda (error)
 		     (write-log self
 				'("(return-error): ~a." error))))))
 	 
-	 (define (send-response self client-conn content)
-	   (if (invoke-hook self 'before-send-response
-			    (list client-conn content))
-	       (socket-send (connection-socket client-conn) content)))
+	 (define (send-response self client-conn resp)
+	   (cond ((invoke-hook self 'before-send-response
+			       (list client-conn resp))
+		  (socket-send (connection-socket client-conn) 
+			       (response::response->string resp))
+		  (socket-send (connection-socket client-conn)
+			       (response::response-body resp)))))
 
 	 (define (write-log self entries)
 	   (if (not (list? entries))
