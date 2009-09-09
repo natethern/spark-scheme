@@ -59,6 +59,7 @@
 	  (load (string-append spark-home "/scheme/" "http/" folder "session-util" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "session" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "request-parser" ext))
+	  (load (string-append spark-home "/scheme/" "http/" folder "sml-parser" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "resource-loader" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "mime-types" ext))
 	  (load (string-append spark-home "/scheme/" "http/" folder "response" ext))

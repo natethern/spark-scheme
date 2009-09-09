@@ -53,6 +53,8 @@
 	 ;; Valid key-values are
 	 ;; 'port integer - The port to listen on. Defaults to 80.
 	 ;; 'script-ext string - Script file extention. Defaults to "ss".
+	 ;; 'embedded-script-ext string - Embedded script file extention. 
+	 ;;                               Defaults to "sml".
 	 ;; 'session-timeout integer - Session timeout in seconds. 
          ;;                            Defaults to 5 minutes.
 	 ;; 'max-header-length - Maximum number of bytes that the request
@@ -155,6 +157,7 @@
 	   (let ((conf (make-hash-table)))
 	     (hash-table-put! conf 'port 80)
 	     (hash-table-put! conf 'script-ext #"ss")
+	     (hash-table-put! conf 'embedded-script-ext #"sml")
 	     (hash-table-put! conf 'session-timeout (* 5 60)) ;; 5 minutes
 	     (hash-table-put! conf 'max-header-length (* 1024 512)) ;; 512Kb
 	     (hash-table-put! conf 'max-body-length (* 1024 5120)) ;; 5Mb
@@ -222,14 +225,16 @@
 
 	 (define (read-body conf client-socket http-request)
 	   (let ((max-body-length (hash-table-get conf 'max-body-length))
-		 (content-length (parser::http-request-header 
-				  http-request "content-length" 0)))
-	     (if (> content-length 0)
-		 (cond ((> content-length max-body-length)
-			(raise "Content is too long."))
-		       (else
-			(socket-recv client-socket content-length)))
-		 "")))
+		 (content-length (string->number (parser::http-request-header 
+						  http-request "content-length" "0")))
+		 (content ""))
+	     (if (number? content-length)
+		 (if (> content-length 0)
+		     (cond ((> content-length max-body-length)
+			    (raise "Content is too long."))
+			   (else
+			    (set! content (socket-recv client-socket content-length))))))
+	     content))
 
 	 (define (handle-request self client-conn http-request)
 	   (if (invoke-hook self 'before-handle-request

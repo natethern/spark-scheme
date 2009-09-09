@@ -30,37 +30,45 @@
 	 (import (http-session) 
 		 (http-request-parser)
 		 (http-globals)
+		 (http-sml-parser)
 		 (mime-types))
 
-	 (define-struct resource-loader-s (script-cache))
+	 (define-struct resource-loader-s (script-cache sml-cache))
 	 (define-struct resource-s (content 
 				    content-type
 				    content-length
 				    content-last-modified))
 
 	 (define (resource-loader)
-	   (make-resource-loader-s (make-hash-table 'equal)))
+	   (make-resource-loader-s (make-hash-table 'equal)
+				   (make-hash-table 'equal)))
 
 	 ;; Returns an instance of resource-s
 	 (define (resource-loader-load self web-server-conf
-				       http-request session)
+				       http-request sessions)
 	   (let* ((uri (normalize-uri (http-request-uri http-request)))
 		  (uri-data (parse-uri uri))
 		  (root-uri (list-ref uri-data 0))
 		  (sess-info (list-ref uri-data 1))
-		  (type (find-res-type root-uri
-				       (hash-table-get web-server-conf 
-						       'script-ext))))
+		  (type (find-res-type root-uri web-server-conf)))
 	     (let-values (((sz res) 
 			   (load-resource self root-uri type web-server-conf)))
 	       (cond
+		((eq? type 'embedded-script)
+		 (let ((content (execute-embedded-script 
+				 res
+				 (http-request-data http-request))))
+		   (make-resource-s content
+				    (string-length content)
+				    "text/html"
+				    (current-seconds))))
 		((eq? type 'script)
 		 (let* ((ids (parse-session-info sess-info))
 			(content (execute-resource res root-uri 
 						   (list-ref ids 0)
 						   (list-ref ids 1)
 						   (http-request-data http-request)
-						   session)))
+						   sessions)))
 		   (make-resource-s content 
 				    (string-length content)
 				    "text/html"
@@ -87,23 +95,41 @@
 	 (define (load-resource self uri 
 				type web-server-conf)
 	   (case type
-	     ((file) (read-fresh-file uri web-server-conf))
+	     ((embedded-script) 
+	      (read-sml self uri web-server-conf))
+	     ((file) 
+	      (read-fresh-file uri web-server-conf 'bytes))
 	     ((script) 
-	      (let ((cached 
+	      (let ((cache 
 		     (hash-table-get (resource-loader-s-script-cache self)
 				     uri null)))
-		(if (not (null? cached)) 
-		    (values 0 cached)
+		(if (not (null? cache)) 
+		    (values 0 cache)
 		    (values 0 (read-fresh-script self uri)))))))
 
-	 (define (read-fresh-file uri web-server-conf)	   
+	 (define (read-sml self uri web-server-conf)
+	   (let ((cache (hash-table-get (resource-loader-s-sml-cache self)
+					 uri null)))
+	     (cond ((not (null? cache))
+		    (values (car cache) (cdr cache)))
+		   (else
+		    (let-values (((sz content) 
+				  (read-fresh-file uri web-server-conf 'string)))
+		      (hash-table-put! (resource-loader-s-sml-cache self)
+				       uri
+				       (cons sz content))
+		      (values sz content))))))
+		   
+	 (define (read-fresh-file uri web-server-conf mode)	   
 	   (let ((sz (file-size uri)))		 
 	     (if (> sz (hash-table-get web-server-conf 'max-response-size))
 		 (raise "Response will exceed maximum limit."))
 	     (let ((file null) (err null) (data null))
 	       (try
 		(set! file (open-input-file uri))
-		(set! data (read-bytes sz file))
+		(case mode
+		  ((string) (set! data (read-string sz file)))
+		  (else (set! data (read-bytes sz file))))
 		(catch (lambda (ex) (set! err ex))))
 	       (if (not (null? file)) (close-input-port file))
 	       (if (not (null? err)) (raise err))
@@ -122,18 +148,33 @@
 	       (set! uri "./index.html"))
 	   uri)
 
-	 (define (find-res-type uri script-ext)
+	 (define (find-res-type uri conf)
 	   (let ((ext (filename-extension uri)))
 	     (if (bytes? ext)
-		 (if (bytes=? ext script-ext)
-		     'script
-		     'file)
-		 'file)))
+		 (cond ((bytes=? ext (script-ext conf)) 'script)
+		       ((bytes=? ext (embedded-script-ext conf)) 'embedded-script)
+		       (else 'file)))))
+
+	 (define *ss-script-ext* null)
+	 (define *embedded-script-ext* null)
+
+	 (define (script-ext conf)
+	   (if (null? *ss-script-ext*)
+	       (set! *ss-script-ext* (hash-table-get conf 'script-ext)))
+	   *ss-script-ext*)
+
+	 (define (embedded-script-ext conf)
+	   (if (null? *embedded-script-ext*)
+	       (set! *embedded-script-ext* (hash-table-get conf 'embedded-script-ext)))
+	   *embedded-script-ext*)
 
 	 (define (parse-uri uri)
 	   (let ((idx (string-find uri *sess-id-sep*)))
 	     (if (= idx -1) 
-		 (list uri null)
+		 (let ((idx (string-find uri "?")))
+		   (if (= idx -1)
+		       (list uri null)
+		       (list (substring uri 0 idx) null)))
 		 (list (substring uri 0 idx) 
 		       (find-session-info uri (add1 idx))))))
 
@@ -152,9 +193,9 @@
 
 	 (define (execute-resource res uri 
 				   sess-id proc-count 
-				   http-data session)
+				   http-data sessions)
 	   (let ((content 
 		  (session-execute-procedure 
 		   uri res sess-id 
-		   proc-count http-data session)))
+		   proc-count http-data sessions)))
 	     content)))
