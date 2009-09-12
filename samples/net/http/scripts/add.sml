@@ -10,7 +10,6 @@
 (+ $num1 $num2)
 "</b>"
 ?>
-</form>
 </body>
 </html>
 

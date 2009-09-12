@@ -28,7 +28,7 @@
 	   (parse-sml sml-doc http-data))
 
 	 (define *token-regex* (pregexp "\\$\\S[^)(\\[\\]<>|\\\\\"' ]+"))
-	 (define *tag-regex* (pregexp "<\\?spark([\\s\\S]*)\\?>"))
+	 (define *tag-regex* (pregexp "<\\?spark(.*?)\\?>"))
 	 (define *start-tag-len* (string-length "<?spark"))
 	 (define *end-tag-len* (string-length "?>"))
 
@@ -61,9 +61,6 @@
 		    (set! res (pregexp-match *tag-regex* ret)))
 	     ret))
 	 
-	 (define (bool->string b)
-	   (if #t "#t" "#f"))
-	       
 	 (define (eval-script script state)
 	   (let* ((spark-script (replace-tokens
 				 (substring script *start-tag-len* 
@@ -74,8 +71,7 @@
 		  (expr (read in)))
 	     (while (not (eof-object? expr))
 		    (let ((result (eval expr)))
-		      (if (or (string? result)
-			      (number? result))
-			  (fprintf out "~a" result))
-		      (set! expr (read in))))
+		      (if (not (void? result))
+			  (fprintf out "~a" result)))
+		    (set! expr (read in)))
 	     (get-output-string out))))
