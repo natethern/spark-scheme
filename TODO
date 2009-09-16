@@ -1,4 +1,4 @@
-24-AUG-2009
+16-SEP-2009
 
- * Use AVL tree (Desktop/avl.ss) to store web server sessions.
+ * Compile and cache Fermion Embedded scripts.
 
