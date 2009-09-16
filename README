@@ -1,10 +1,21 @@
 README
 ======
 
-Spark-Scheme is a dialect of Lisp, derived from MzScheme. It has powerful meta-programing facilities that enable the dynamic extension of the core language itself. It adds a whole new dimension to distributed computing with ''concurrent objects''. It is easy to learn and helps the fast 
-development of concise, correct programs.
+Spark-Scheme is a dialect of Lisp, derived from MzScheme. 
+It has powerful meta-programing facilities that enable the 
+dynamic extension of the core language itself. It adds a 
+whole new dimension to distributed computing with "concurrent 
+objects". It is easy to learn and helps the fast development 
+of concise, correct programs.
 
-Spark-Scheme is also a Virtual Operating System that can be hosted on GNU/Linux, BSD and Windows (Cygwin). It has libraries to access the file system and the network. It has an advanced GUI framework with 2D/3D graphics rendering capabilities. It can be easily interfaced with databases. It also has frameworks for developing web applications. It can make use of existing C/C++ libraries without the aid of special low-level interfacing code.
+Spark-Scheme is also a Virtual Operating System that can be 
+hosted on GNU/Linux, BSD and Windows (Cygwin). It has libraries 
+to access the file system and the network. It has an advanced 
+GUI framework with 2D/3D graphics rendering capabilities. It 
+can be easily interfaced with databases. It also has frameworks 
+for developing web applications. It can make use of existing 
+C/C++ libraries without the aid of special low-level interfacing 
+code.
 
 Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
 
