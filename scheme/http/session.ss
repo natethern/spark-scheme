@@ -44,7 +44,7 @@
 					(current-seconds)))
 		  (state (make-default-session-state sess-id)))
 	     (hash-table-put! sessions sess-id sess)
-	     sess-id))
+	     sess))
 
 	 (define (session-destroy id sessions)
 	   (hash-table-remove! sessions id))
@@ -61,35 +61,37 @@
 					    p-count
 					    state-to-add
 					    sessions)
-	   (let* ((sess (find-session sess-id url sessions))
-		  (id (session-s-id sess))
-		  (procs-len (length procs)))
-	     (let ((proc-count (add1 p-count)))
-	       (let ((state (session-s-state sess)) 
-		     (res-html null))
-		 (hash-table-map state-to-add 
-				 (lambda (k v) (hash-table-put! state k v)))
-		 (try
-		  (cond ((not (http-share-state? state))
-			 (set! sess (session-remap sess sessions))
-			 (set! id (session-s-id sess))))
-		  (set! res-html ((list-ref procs (sub1 proc-count))
-				  (make-session-url url id proc-count) 
-				  state))
-		  (catch (lambda (ex)
-			   (cond ((procedure? ex)
-				  (set! proc-count (find-proc-index ex procs))
-				  (set! res-html 
-					(session-execute-procedure url procs
-								   sess-id 
-								   proc-count
-								   state-to-add
-								   sessions)))
-				 (else (raise ex))))))
-		 (if (>= proc-count procs-len)
-		     (if (not (http-keep-alive? state))
-		  	 (session-destroy id sessions)))
-		 res-html))))
+	   (if (procedure? procs) ;; execute-procedure-without-session
+	       (procs state-to-add)
+	       (let* ((sess (find-session sess-id url sessions))
+		      (id (session-s-id sess))
+		      (procs-len (length procs)))
+		 (let ((proc-count (add1 p-count)))
+		   (let ((state (session-s-state sess)) 
+			 (res-html null))
+		     (hash-table-map state-to-add 
+				     (lambda (k v) (hash-table-put! state k v)))
+		     (try
+		      (cond ((not (http-share-state? state))
+			     (set! sess (session-remap sess sessions))
+			     (set! id (session-s-id sess))))
+		      (set! res-html ((list-ref procs (sub1 proc-count))
+				      (make-session-url url id proc-count) 
+				      state))
+		      (catch (lambda (ex)
+			       (cond ((procedure? ex)
+				      (set! proc-count (find-proc-index ex procs))
+				      (set! res-html 
+					    (session-execute-procedure url procs
+								       sess-id 
+								       proc-count
+								       state-to-add
+								       sessions)))
+				     (else (raise ex))))))
+		     (if (>= proc-count procs-len)
+			 (if (not (http-keep-alive? state))
+			     (session-destroy id sessions)))
+		     res-html)))))
 
 	 (define (find-proc-index proc procs-list)
 	   (let ((ret 0))
@@ -108,12 +110,11 @@
 	     id))
 
 	 (define (find-session id url sessions)
-	   (if (= id -1) 
-	       (set! id (session-create url sessions)))
 	   (let ((sess (hash-table-get sessions id null)))
-	     (cond ((null? sess) (raise "Invalid session"))
-		   (else (set-session-s-last-access! sess (current-seconds))
-			 sess))))
+	     (if (null? sess) (set! sess (session-create url sessions)))
+	     (if (null? sess) (raise "Invalid session")
+		 (set-session-s-last-access! sess (current-seconds)))
+	     sess))		       
 
 	 (define (make-session-url url sess-id proc-count)
 	   (let ((out (open-output-string)))

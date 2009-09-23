@@ -4,7 +4,7 @@
   ;; Make this session non-usable and prevent state 
   ;; sharing among its various instances.
   (http-keep-alive! http #f)
-  (http-share-state! http #f)
+  ;(http-share-state! http #f)
 
   (let ((html (sgml `(html
 		      (body
