@@ -109,17 +109,17 @@
 
 	 (define (read-sml self uri web-server-conf)
 	   (let ((cache (hash-table-get (resource-loader-s-sml-cache self)
-					 uri null)))
+					uri null)))
 	     (cond ((not (null? cache))
 		    (values (car cache) (cdr cache)))
 		   (else
 		    (let-values (((sz content) 
 				  (read-fresh-file uri web-server-conf 'string)))
-		      (hash-table-put! (resource-loader-s-sml-cache self)
-				       uri
-				       (cons sz content))
-		      (values sz content))))))
-		   
+				(hash-table-put! (resource-loader-s-sml-cache self)
+						 uri
+						 (cons sz content))
+				(values sz content))))))
+	 
 	 (define (read-fresh-file uri web-server-conf mode)	   
 	   (let ((sz (file-size uri)))		 
 	     (if (> sz (hash-table-get web-server-conf 'max-response-size))

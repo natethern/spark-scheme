@@ -1,6 +1,11 @@
 (import (aura))
 
 (define (get-num1 new-uri http)
+  ;; Make this session non-usable and prevent state 
+  ;; sharing among its various instances.
+  (http-keep-alive! http #f)
+  (http-share-state! http #f)
+
   (let ((html (sgml `(html
 		      (body
 		       (form ((action ,new-uri))
@@ -28,9 +33,6 @@
 	(http-call get-num1))
     (if (not (number? (string->number s2)))
 	(http-call get-num2))
-
-    ;; Make this session re-usable.
-    ;(http-keep-alive! http)
 
     (let* ((res (number->string (+ (string->number s1)
 				   (string->number s2))))

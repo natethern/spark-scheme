@@ -23,10 +23,13 @@
 	 (export http-value http-value! 
 		 http-call http-keep-alive!
 		 http-keep-alive?
+		 http-share-state!
+		 http-share-state?
 		 make-default-session-state)
 
-	 (define *keep-alive* "__keep_alive__")
-	 (define *session-id* "__sesssion_id__")
+	 (define *keep-alive* "*keep-alive*")
+	 (define *session-id* "*sesssion-id*")
+	 (define *share-state* "*share-state*")
 
 	 (define http-value
 	   (case-lambda
@@ -41,17 +44,21 @@
 	       (raise "http-call failed. Not a procedure.")
 	       (raise proc)))
 
-	 (define http-keep-alive!
-	   (case-lambda
-	    ((state) (http-keep-alive! state #t))
-	    ((state flag)
-	     (hash-table-put! state *keep-alive* flag))))
+	 (define (http-keep-alive! state flag)
+	   (hash-table-put! state *keep-alive* flag))
+
+	 (define (http-share-state! state flag)
+	   (hash-table-put! state *share-state* flag))
 
 	 (define (http-keep-alive? state)
 	   (hash-table-get state *keep-alive* #f))
+
+	 (define (http-share-state? state)
+	   (hash-table-get state *share-state* #t))
 	 
 	 (define (make-default-session-state id)
 	   (let ((state (make-hash-table 'equal)))
 	     (hash-table-put! state *session-id* id)
 	     (hash-table-put! state *keep-alive* #f)
+	     (hash-table-put! state *share-state* #t)
 	     state)))

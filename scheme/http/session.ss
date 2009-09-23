@@ -49,6 +49,13 @@
 	 (define (session-destroy id sessions)
 	   (hash-table-remove! sessions id))
 	 
+	 (define (session-remap sess sessions)
+	   (let ((new-sess (find-session -1 (session-s-url sess)
+					 sessions)))
+	     (set-session-s-state! new-sess (session-s-state sess))
+	     (session-destroy (session-s-id sess) sessions)
+	     new-sess))
+
 	 (define (session-execute-procedure url procs 
 					    sess-id
 					    p-count
@@ -63,6 +70,9 @@
 		 (hash-table-map state-to-add 
 				 (lambda (k v) (hash-table-put! state k v)))
 		 (try
+		  (cond ((not (http-share-state? state))
+			 (set! sess (session-remap sess sessions))
+			 (set! id (session-s-id sess))))
 		  (set! res-html ((list-ref procs (sub1 proc-count))
 				  (make-session-url url id proc-count) 
 				  state))
@@ -78,7 +88,7 @@
 				 (else (raise ex))))))
 		 (if (>= proc-count procs-len)
 		     (if (not (http-keep-alive? state))
-			 (session-destroy id sessions)))
+		  	 (session-destroy id sessions)))
 		 res-html))))
 
 	 (define (find-proc-index proc procs-list)
