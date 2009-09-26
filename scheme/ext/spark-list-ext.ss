@@ -153,7 +153,8 @@
 	     ((and (list? list1) (list? list2))
 	      (l::merge-sorted-lists list1 list2 lt))
 	     ((and (vector? list1) (vector? list2))
-	      (list->vector (l::merge-sorted-lists (vector->list list1) (vector->list list2) lt)))
+	      (list->vector (l::merge-sorted-lists (vector->list list1) 
+						   (vector->list list2) lt)))
 	     (else (error "Cannot merge-sort this type.")))))
 
 	(define (empty? self)
@@ -236,21 +237,20 @@
 		  #t))
 
 	(set! list-flatten 
-	      (lambda (args)
-		(let ((ret (list))
-		      (c null))
-		  (let loop ()
-		    (if (not (null? args))
-			(begin
-			  (set! c (car args))
-			  (cond 
-			   ((list? c)
-			    (set! ret (append ret (list-flatten c))))
-			   (else
-			    (set! ret (append ret (list c)))))
-			  (set! args (cdr args))
-			  (loop))))
-		  ret)))
+	      (lambda (lst)
+		(if (not (null? lst))
+		    (let loop ((args lst) (ret (list)) (c null))
+		      (if (not (null? args))
+			  (begin
+			    (set! c (car args))
+			    (cond ((list? c) 
+				   (loop (cdr args) 
+					 (append ret (list-flatten c)) c))
+				  (else 
+				   (loop (cdr args) 
+					 (append ret (list c)) c))))
+			  ret))
+		    null)))
 
 	(set! vector-flatten
 	      (lambda (args)
@@ -276,13 +276,10 @@
 		    (if (not (null? v))
 			(begin
 			  (set! c (car v))
-			  (if (not (null? rev))
-			      (begin
-				(if (p c)
-				    (set! ret (append ret (list c)))))
-			      (begin
-				(if (not (p c))
-				    (set! ret (append ret (list c))))))
+			  (cond ((not (null? rev))
+				 (if (p c) (set! ret (append ret (list c)))))
+				(else
+				 (if (not (p c)) (set! ret (append ret (list c))))))
 			  (set! v (cdr v))
 			  (loop))))
 		  ret)))
