@@ -1,6 +1,6 @@
 // Provides subclasses of Fl_Widget and Fl_Group that can be
 // customized from scheme.
-// Copyright (C) 2008  Vijay Mathew Pandyalakal
+// Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
