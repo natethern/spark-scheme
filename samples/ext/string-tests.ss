@@ -1,6 +1,6 @@
 (import (sunit))
 
-(define verbose #t)
+(define verbose #f)
 
 (sunit-suite "string-tests"
 	     (list

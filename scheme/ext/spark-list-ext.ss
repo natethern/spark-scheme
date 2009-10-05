@@ -60,7 +60,7 @@
 
 	(define (find s v . args)
 	  (cond
-	   ((null? s) -1)
+	   ((null? s) #f)
 	   (else
 	    (if (not (list? s))
 		(begin
@@ -69,7 +69,7 @@
 		   ((string? s) (set! s (string->list s)))
 		   (else (error "Cannot do a find on this object.")))))
 	    (let ((p eq?) (b 0) (c null) (i 0)
-		  (len (length s)) (ret -1))
+		  (len (length s)) (ret #f))
 	      (if (not (null? args))
 		  (begin
 		    (set! b (car args))
@@ -90,7 +90,7 @@
 
 	(define (rfind s v . args)
 	  (cond
-	   ((null? s) -1)
+	   ((null? s) #f)
 	   (else
 	    (if (not (list? s))
 		(begin
@@ -98,7 +98,7 @@
 		   ((vector? s) (set! s (vector->list s)))
 		   ((string? s) (set! s (string->list s)))
 		   (else (error "Cannot do a rfind on this object.")))))
-	    (let ((r -1) (p eq?) (b 0))
+	    (let ((r #f) (p eq?) (b 0))
 	      (if (not (null? args))
 		  (begin
 		    (set! b (car args))
@@ -106,7 +106,7 @@
 	      (if (not (null? args))
 		  (set! p (car args)))
 	      (set! r (find (reverse s) v b p))
-	      (if (not (= r -1))
+	      (if (not (eq? r #f))
 		  (begin
 		    (set! r (add1 r))
 		    (set! r (- (length s) r))))
@@ -187,7 +187,7 @@
 	      (if (not (null? self))
 		  (begin
 		    (set! i (car self))
-		    (if (= (find ret i 0 cmpr) -1)
+		    (if (eq? (find ret i 0 cmpr) #f)
 			(set! ret (append ret (list i))))
 		    (set! self (cdr self))
 		    (loop))))
