@@ -37,18 +37,14 @@
 	(define list-remove-if null)
 	(define vector-remove-if null)
 
-	(define remove-if
-	  (case-lambda 
-	   ((v)
-	    (remove-if v eq?))
-	   ((v p)
-	    (cond 
-	     ((list? v)
-	      (list-remove-if v p))
-	     ((vector? v)
-	      (vector-remove-if v p))
-	     (else
-	      (error "(remove-if) cannot be applied on this object."))))))
+	(define (remove-if v p)
+	  (cond 
+	   ((list? v)
+	    (list-remove-if v p))
+	   ((vector? v)
+	    (vector-remove-if v p))
+	   (else
+	    (error "(remove-if) cannot be applied on this object."))))
 
 	(define (remove-if-not v predic)
 	  (cond 
@@ -134,7 +130,7 @@
 	      (list->vector (l::merge-sorted-lists (vector->list list1) 
 						   (vector->list list2) lt)))
 	     (else (error "Cannot merge-sort this type."))))))
-	  
+	
 	(define (empty? self)
 	  (cond
 	   ((list? self) (l::empty? self))
@@ -150,32 +146,33 @@
 	(define (find-if self f)
 	  (cond
 	   ((list? self) (l::findf f self))
-	   ((vector? self) (list->vector (l::findf f (vector->list self))))
+	   ((vector? self) (l::findf f (vector->list self)))
 	   (else (error "Invalid type."))))
 
-	(define (unique self . args)
-	  (let ((ret (list)) (i null) (cmpr =) (v #f))
-	    (if (not (null? args))
-		(set! cmpr (car args)))
-	    (if (vector? self)
-		(begin
-		  (set! self (vector->list self))
-		  (set! v #t)))
-	    (let loop ()
-	      (if (not (null? self))
+	(define unique
+	  (case-lambda
+	   ((self) (unique self eq?))
+	   ((self cmpr)
+	    (let ((ret (list)) (i null) (v #f))
+	      (if (vector? self)
 		  (begin
-		    (set! i (car self))
-		    (if (eq? (find ret i 0 cmpr) #f)
-			(set! ret (append ret (list i))))
-		    (set! self (cdr self))
-		    (loop))))
-	    (if v
-		(list->vector ret)
-		ret)))	
+		    (set! self (vector->list self))
+		    (set! v #t)))
+	      (let loop ()
+		(if (not (null? self))
+		    (begin
+		      (set! i (car self))
+		      (if (eq? (find ret i 0 cmpr) #f)
+			  (set! ret (append ret (list i))))
+		      (set! self (cdr self))
+		      (loop))))
+	      (if v
+		  (list->vector ret)
+		  ret)))))
 
 	(define unique?
 	  (case-lambda ((self)
-			(unique? self =))
+			(unique? self eq?))
 		       ((self cmpr)
 			(let ((len-f length))
 			  (if (vector? self)
@@ -189,19 +186,19 @@
 			(l::remove item self compr-proc))))
 
 	;; Returns a new copy of lst after droping the first n elements in lst.
-	(define (drop n lst)
+	(define (drop lst n)
 	  (if (or (<= n 0) (null? lst))
 	      lst
-	      (drop (- n 1) (cdr lst))))
+	      (drop (cdr lst) (- n 1))))
 
 	;; Returns a new copy of lst that contains only the first n elements.
-	(define (take n lst)
+	(define (take lst n)
 	  (if (or (<= n 0) (null? lst))
 	      null
-	      (cons (car lst) (take (- n 1) (cdr lst)))))
+	      (cons (car lst) (take (cdr lst) (- n 1)))))
 
 	;; Returns #t if predicate is true for all elements in elems.
-	(define (every? predicate? elems)
+	(define (every? elems predicate?)
 	  (if (not (list? elems))
 	      (cond 
 	       ((vector? elems) (set! elems (vector->list elems)))
