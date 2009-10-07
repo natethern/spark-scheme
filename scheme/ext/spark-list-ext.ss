@@ -37,17 +37,18 @@
 	(define list-remove-if null)
 	(define vector-remove-if null)
 
-	(define (remove-if v . predic)
-	  (let ((p eq?))
-	    (if (not (null? predic))
-		(set! p (car predic)))
+	(define remove-if
+	  (case-lambda 
+	   ((v)
+	    (remove-if v eq?))
+	   ((v p)
 	    (cond 
 	     ((list? v)
 	      (list-remove-if v p))
 	     ((vector? v)
 	      (vector-remove-if v p))
 	     (else
-	      (error "(remove-if) cannot be applied on this object.")))))
+	      (error "(remove-if) cannot be applied on this object."))))))
 
 	(define (remove-if-not v predic)
 	  (cond 
@@ -58,105 +59,82 @@
 	   (else
 	    (error "(remove-if-not) cannot be applied on this object."))))
 
-	(define (find s v . args)
-	  (cond
-	   ((null? s) #f)
-	   (else
-	    (if (not (list? s))
-		(begin
-		  (cond 
-		   ((vector? s) (set! s (vector->list s)))
-		   ((string? s) (set! s (string->list s)))
-		   (else (error "Cannot do a find on this object.")))))
-	    (let ((p eq?) (b 0) (c null) (i 0)
-		  (len (length s)) (ret #f))
-	      (if (not (null? args))
-		  (begin
-		    (set! b (car args))
-		    (set! args (cdr args))))
-	      (if (not (null? args))
-		  (set! p (car args)))
-	      (set! i b)
-	      (let loop ()
-		(if (< i len)	    
-		    (begin
-		      (set! c (list-ref s i))
-		      (if (p v c)
-			  (set! ret i)
-			  (begin
-			    (set! i (add1 i))
-			    (loop))))))
-	      ret))))
-
-	(define (rfind s v . args)
-	  (cond
-	   ((null? s) #f)
-	   (else
-	    (if (not (list? s))
-		(begin
-		  (cond 
-		   ((vector? s) (set! s (vector->list s)))
-		   ((string? s) (set! s (string->list s)))
-		   (else (error "Cannot do a rfind on this object.")))))
-	    (let ((r #f) (p eq?) (b 0))
-	      (if (not (null? args))
-		  (begin
-		    (set! b (car args))
-		    (set! args (cdr args))))
-	      (if (not (null? args))
-		  (set! p (car args)))
-	      (set! r (find (reverse s) v b p))
-	      (if (not (eq? r #f))
-		  (begin
-		    (set! r (add1 r))
-		    (set! r (- (length s) r))))
-	      r))))
-
-	(define (merge . s)
-	  (let ((ret (list))
-		(c null))
-	    (let loop ()
-	      (if (not (null? s))
-		  (begin
-		    (set! c (car s))
-		    (cond
-		     ((list?) (set! ret (append ret c)))
-		     ((vector?) (set! ret (append ret (vector->list c))))
-		     (else (set! ret (append ret (list c)))))
-		    (set! s (cdr s))
-		    (loop))))
-	    ret))
-
-	(define (sort self . args)
-	  (let ((lt <) (type 'sort) (f null))
-	    (if (not (null? args))
-		(begin
-		  (set! lt (car args))
-		  (set! args (cdr args))))
-	    (if (not (null? args))
-		(set! type (car args)))
-	    (case type
-	      ((sort) (set! f l::sort))
-	      ((quick) (set! f l::quicksort))
-	      ((merge) (set! f l::mergesort))
-	      (else (error "Invalid sort type.")))		
+	(define find
+	  (case-lambda
+	   ((s v) (find s v 0 eq?))
+	   ((s v offset) (find s v offset eq?))
+	   ((s v b p)
 	    (cond
-	     ((list? self) (f self lt))
-	     ((vector? self) (list->vector (f (vector->list self) lt)))
-	     (else (error "Cannot sort this type.")))))
+	     ((null? s) #f)
+	     (else
+	      (if (not (list? s))
+		  (begin
+		    (cond 
+		     ((vector? s) (set! s (vector->list s)))
+		     ((string? s) (set! s (string->list s)))
+		     (else (error "Cannot do a find on this object.")))))
+	      (let ((c null) (i b)
+		    (len (length s)) (ret #f))
+		(let loop ()
+		  (if (< i len)	    
+		      (begin
+			(set! c (list-ref s i))
+			(if (p v c)
+			    (set! ret i)
+			    (begin
+			      (set! i (add1 i))
+			      (loop))))))
+		ret))))))
 
-	(define (merge-sorted list1 list2 . args)
-	  (let ((lt <))
-	    (if (not (null? args))
-		(set! lt (car args)))
+	(define rfind
+	  (case-lambda
+	   ((s v) (rfind s v 0 eq?))
+	   ((s v b) (rfind s v b eq?))
+	   ((s v b p)
+	    (cond
+	     ((null? s) #f)
+	     (else
+	      (if (not (list? s))
+		  (begin
+		    (cond 
+		     ((vector? s) (set! s (vector->list s)))
+		     ((string? s) (set! s (string->list s)))
+		     (else (error "Cannot do a rfind on this object.")))))
+	      (let ((r (find (reverse s) v b p)))
+		(if (not (eq? r #f))
+		    (begin
+		      (set! r (add1 r))
+		      (set! r (- (length s) r))))
+		r))))))
+
+	(define sort
+	  (case-lambda
+	   ((self) (sort self < 'sort))
+	   ((self lt) (sort self lt 'sort))
+	   ((self lt type)
+	    (let ((f null))
+	      (case type
+		((sort) (set! f l::sort))
+		((quick) (set! f l::quicksort))
+		((merge) (set! f l::mergesort))
+		(else (error "Invalid sort type.")))
+	      (cond
+	       ((list? self) (f self lt))
+	       ((vector? self) (list->vector (f (vector->list self) lt)))
+	       (else (error "Cannot sort this type.")))))))
+
+	(define merge-sorted
+	  (case-lambda
+	   ((list1 list2) (merge-sorted list1 list2 <))
+	   ((list1 list2 lt)
 	    (cond
 	     ((and (list? list1) (list? list2))
 	      (l::merge-sorted-lists list1 list2 lt))
 	     ((and (vector? list1) (vector? list2))
 	      (list->vector (l::merge-sorted-lists (vector->list list1) 
 						   (vector->list list2) lt)))
-	     (else (error "Cannot merge-sort this type.")))))
-
+	     (else (error "Cannot merge-sort this type."))))))
+	  
 	(define (empty? self)
 	  (cond
 	   ((list? self) (l::empty? self))
@@ -195,18 +173,20 @@
 		(list->vector ret)
 		ret)))	
 
-	(define (unique? self . args)
-	  (let ((cmpr =) (len-f length))
-	    (if (not (null? args))
-		(set! cmpr (car args)))
-	    (if (vector? self)
-		(set! len-f vector-length))
-	    (= (len-f self) (len-f (unique self cmpr)))))
+	(define unique?
+	  (case-lambda ((self)
+			(unique? self =))
+		       ((self cmpr)
+			(let ((len-f length))
+			  (if (vector? self)
+			      (set! len-f vector-length))
+			  (= (len-f self) (len-f (unique self cmpr)))))))
 
-	(define (remove self item . args)
-	  (if (null? args)
-	      (l::remove item self)
-	      (l::remove item self (car args))))
+	(define remove 
+	  (case-lambda ((self item)
+			(l::remove item self))
+		       ((self item compr-proc)
+			(l::remove item self compr-proc))))
 
 	;; Returns a new copy of lst after droping the first n elements in lst.
 	(define (drop n lst)
