@@ -135,11 +135,16 @@
 		 (semaphore-post sema)
 		 res)))))
 	
-	(provide try
-		 while
-		 for
-		 atomic
-		 library
-		 export
-		 import))
+	;; Simpler let.
+	(define-syntax with
+	  (syntax-rules ()
+	    ((with () form . forms)
+	     (begin form . forms))
+	    ((with (s v . more) form . forms)
+	     (let ((s v))
+	       (with more form . forms)))))
+	
+	(provide try while for
+		 atomic library export import
+		 with))
 
