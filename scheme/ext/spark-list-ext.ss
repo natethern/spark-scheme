@@ -1,4 +1,4 @@
-;; Some list and vector utilities. 
+;; Some list utilities. 
 ;; Copyright (C) 2007, 2008, 2009  Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -22,38 +22,26 @@
 
 	(require (prefix l:: (lib "list.ss")))
 
-	(define list-flatten null)
-	(define vector-flatten null)
-	
-	(define (flatten args)
-	  (cond 
-	   ((list? args)
-	    (list-flatten args))
-	   ((vector? args)
-	    (vector-flatten args))
-	   (else
-	    (error "Could not flatten this object."))))
-
+	(define (flatten lst)
+	  (if (not (null? lst))
+	      (let loop ((args lst) (ret (list)))
+		(if (not (null? args))
+		    (let ((c (car args)))
+		      (if (list? c)
+			  (loop (cdr args) 
+				(append ret (flatten c)))
+			  (loop (cdr args) 
+				(append ret (list c)))))
+		    ret))
+	      null))
+	  
 	(define list-remove-if null)
-	(define vector-remove-if null)
 
 	(define (remove-if v p)
-	  (cond 
-	   ((list? v)
-	    (list-remove-if v p))
-	   ((vector? v)
-	    (vector-remove-if v p))
-	   (else
-	    (error "(remove-if) cannot be applied on this object."))))
+	  (list-remove-if v p))
 
 	(define (remove-if-not v predic)
-	  (cond 
-	   ((list? v)
-	    (list-remove-if v predic #t))
-	   ((vector? v)
-	    (vector-remove-if v predic #t))
-	   (else
-	    (error "(remove-if-not) cannot be applied on this object."))))
+	  (list-remove-if v predic #t))
 
 	(define find
 	  (case-lambda
@@ -63,23 +51,16 @@
 	    (cond
 	     ((null? s) #f)
 	     (else
-	      (if (not (list? s))
-		  (begin
-		    (cond 
-		     ((vector? s) (set! s (vector->list s)))
-		     ((string? s) (set! s (string->list s)))
-		     (else (error "Cannot do a find on this object.")))))
 	      (let ((c null) (i b)
 		    (len (length s)) (ret #f))
 		(let loop ()
-		  (if (< i len)	    
-		      (begin
+		  (when (< i len)
 			(set! c (list-ref s i))
-			(if (p v c)
-			    (set! ret i)
-			    (begin
-			      (set! i (add1 i))
-			      (loop))))))
+			(cond ((p v c)
+			       (set! ret i))
+			      (else
+			       (set! i (add1 i))
+			       (loop)))))
 		ret))))))
 
 	(define rfind
@@ -90,12 +71,6 @@
 	    (cond
 	     ((null? s) #f)
 	     (else
-	      (if (not (list? s))
-		  (begin
-		    (cond 
-		     ((vector? s) (set! s (vector->list s)))
-		     ((string? s) (set! s (string->list s)))
-		     (else (error "Cannot do a rfind on this object.")))))
 	      (let ((r (find (reverse s) v b p)))
 		(if (not (eq? r #f))
 		    (begin
@@ -114,50 +89,28 @@
 		((quick) (set! f l::quicksort))
 		((merge) (set! f l::mergesort))
 		(else (error "Invalid sort type.")))
-	      (cond
-	       ((list? self) (f self lt))
-	       ((vector? self) (list->vector (f (vector->list self) lt)))
-	       (else (error "Cannot sort this type.")))))))
+	      (f self lt)))))
 
 	(define merge-sorted
 	  (case-lambda
 	   ((list1 list2) (merge-sorted list1 list2 <))
 	   ((list1 list2 lt)
-	    (cond
-	     ((and (list? list1) (list? list2))
-	      (l::merge-sorted-lists list1 list2 lt))
-	     ((and (vector? list1) (vector? list2))
-	      (list->vector (l::merge-sorted-lists (vector->list list1) 
-						   (vector->list list2) lt)))
-	     (else (error "Cannot merge-sort this type."))))))
-	
+	    (l::merge-sorted-lists list1 list2 lt))))
+
 	(define (empty? self)
-	  (cond
-	   ((list? self) (l::empty? self))
-	   ((vector? self) (l::empty? (vector->list self)))
-	   (else (error "Invalid type."))))
+	  (l::empty? self))
 
 	(define (filter self f)
-	  (cond
-	   ((list? self) (l::filter f self))
-	   ((vector? self) (list->vector (l::filter f (vector->list self))))
-	   (else (error "Invalid type."))))
+	  (l::filter f self))
 
 	(define (find-if self f)
-	  (cond
-	   ((list? self) (l::findf f self))
-	   ((vector? self) (l::findf f (vector->list self)))
-	   (else (error "Invalid type."))))
+	  (l::findf f self))
 
 	(define unique
 	  (case-lambda
 	   ((self) (unique self eq?))
 	   ((self cmpr)
 	    (let ((ret (list)) (i null) (v #f))
-	      (if (vector? self)
-		  (begin
-		    (set! self (vector->list self))
-		    (set! v #t)))
 	      (let loop ()
 		(if (not (null? self))
 		    (begin
@@ -166,24 +119,22 @@
 			  (set! ret (append ret (list i))))
 		      (set! self (cdr self))
 		      (loop))))
-	      (if v
-		  (list->vector ret)
-		  ret)))))
+	      ret))))
 
 	(define unique?
-	  (case-lambda ((self)
-			(unique? self eq?))
-		       ((self cmpr)
-			(let ((len-f length))
-			  (if (vector? self)
-			      (set! len-f vector-length))
-			  (= (len-f self) (len-f (unique self cmpr)))))))
+	  (case-lambda 
+	   ((self)
+	    (unique? self eq?))
+	   ((self cmpr)
+	    (let ((len-f length))
+	      (= (len-f self) (len-f (unique self cmpr)))))))
 
 	(define remove 
-	  (case-lambda ((self item)
-			(l::remove item self))
-		       ((self item compr-proc)
-			(l::remove item self compr-proc))))
+	  (case-lambda 
+	   ((self item)
+	    (l::remove item self))
+	   ((self item compr-proc)
+	    (l::remove item self compr-proc))))
 
 	;; Returns a new copy of lst after droping the first n elements in lst.
 	(define (drop lst n)
@@ -199,18 +150,12 @@
 
 	;; Returns #t if predicate is true for all elements in elems.
 	(define (every? elems predicate?)
-	  (if (not (list? elems))
-	      (cond 
-	       ((vector? elems) (set! elems (vector->list elems)))
-	       ((string? elems) (set! elems (string->list elems)))
-	       (else (error "(every? cannot be applied to this type."))))
 	  (let/ec break
 		  (let loop ((e elems))
-		    (if (not (null? e))
-			(begin
+		    (when (not (null? e))
 			  (if (not (predicate? (car e)))
 			      (break #f))
-			  (loop (cdr e)))))
+			  (loop (cdr e))))
 		  #t))
 
 	(define (find-all self predic)
@@ -229,39 +174,6 @@
 		(loop (cdr tmp) (predic (car tmp)))
 		res)))
 
-	(set! list-flatten 
-	      (lambda (lst)
-		(if (not (null? lst))
-		    (let loop ((args lst) (ret (list)) (c null))
-		      (if (not (null? args))
-			  (begin
-			    (set! c (car args))
-			    (cond ((list? c) 
-				   (loop (cdr args) 
-					 (append ret (list-flatten c)) c))
-				  (else 
-				   (loop (cdr args) 
-					 (append ret (list c)) c))))
-			  ret))
-		    null)))
-
-	(set! vector-flatten
-	      (lambda (args)
-		(let ((ret (list))
-		      (c null)
-		      (len (vector-length args))
-		      (i 0))
-		  (let loop ()
-		    (if (< i len)
-			(begin
-			  (set! c (vector-ref args i))
-			  (if (vector? c)
-			      (set! ret (append ret (vector->list (vector-flatten c))))
-			      (set! ret (append ret (list c))))
-			  (set! i (add1 i))
-			  (loop))))
-		  (list->vector ret))))
-
 	(set! list-remove-if
 	      (lambda (v p . rev)
 		(let ((ret (list)) (c null))
@@ -276,12 +188,6 @@
 			  (set! v (cdr v))
 			  (loop))))
 		  ret)))
-
-	(set! vector-remove-if
-	      (lambda (v p . rev)
-		(if (not (null? rev))
-		    (list->vector (list-remove-if (vector->list v) p (car rev)))
-		    (list->vector (list-remove-if (vector->list v) p)))))
 
 	(provide flatten find rfind
 		 remove-if remove-if-not remove

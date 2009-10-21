@@ -9,11 +9,7 @@
 			 (list 1 2 3 4 "sunny" 'a 'b 'c))
 	      (make-test '(flatten (list 1 2 3 4)) (list 1 2 3 4))
 	      (make-test '(flatten (list)) (list))
-	      (make-test '(flatten (vector 1 2 (vector 3 4))) (vector 1 2 3 4))
-	      (make-test '(flatten (vector 1 2 (vector 3 4 (vector "sunny")) (vector 'a 'b 'c))) 
-			 (vector 1 2 3 4 "sunny" 'a 'b 'c))
-	      (make-test '(flatten (vector 1 2 3 4)) (vector 1 2 3 4))
-	      (make-test '(flatten (vector)) (vector)))
+	      (make-test '(flatten (vector->list (vector 1 2 3 4))) (list 1 2 3 4)))
 	     verbose)
 
 (define (cmp a)
@@ -24,11 +20,7 @@
 	      (make-test '(remove-if (list 10 20 30 40 50) cmp) (list 10 30 40 50))
 	      (make-test '(remove-if (list 10 20 30 20 40 50) cmp) (list 10 30 40 50))
 	      (make-test '(remove-if (list 10 30 40 50) cmp) (list 10 30 40 50))
-	      (make-test '(remove-if (list) cmp) (list))
-	      (make-test '(remove-if (vector 10 20 30 40 50) cmp) (vector 10 30 40 50))
-	      (make-test '(remove-if (vector 10 20 30 20 40 50) cmp) (vector 10 30 40 50))
-	      (make-test '(remove-if (vector 10 30 40 50) cmp) (vector 10 30 40 50))
-	      (make-test '(remove-if (vector) cmp) (vector)))
+	      (make-test '(remove-if (list) cmp) (list)))
 	     verbose)
 
 (sunit-tests "(remove-if-not)"
@@ -36,13 +28,9 @@
 	      (make-test '(remove-if-not (list 10 20 30 40 50) cmp) (list 20))
 	      (make-test '(remove-if-not (list 10 20 30 20 40 50) cmp) (list 20 20))
 	      (make-test '(remove-if-not (list 10 30 40 50) cmp) (list))
-	      (make-test '(remove-if-not (list) cmp) (list))
-	      (make-test '(remove-if-not (vector 10 20 30 40 50) cmp) (vector 20))
-	      (make-test '(remove-if-not (vector 10 20 30 20 40 50) cmp) (vector 20 20))
-	      (make-test '(remove-if-not (vector 10 30 40 50) cmp) (vector))
-	      (make-test '(remove-if-not (vector) cmp) (vector)))
+	      (make-test '(remove-if-not (list) cmp) (list)))
 	     verbose)
-	     
+
 
 (sunit-tests "(find)"
 	     (list
@@ -59,22 +47,7 @@
  	      (make-test '(find (list "sunny" "jenny" "crystel" "kenny") "sam" 1 equal?) #f)
  	      (make-test '(find (list) "sam") #f)
 	      (make-test '(find (list "sam") "sam" 0 equal?) 0)
-	      (make-test '(find (list "sam") "sam" 1 equal?) #f)
-	      (make-test '(find (vector 10 20 30 100 50) 30) 2)
- 	      (make-test '(find (vector 10 20 30 100 50) 30 2) 2)
- 	      (make-test '(find (vector 10 20 30 100 50) 30 5) #f)
- 	      (make-test '(find (vector 10 20 30 100 50) 100) 3)
- 	      (make-test '(find (vector 10 20 30 100 50) 10) 0)
- 	      (make-test '(find (vector 10 20 30 100 50) 50) 4)
- 	      (make-test '(find (vector 10 20 30 100 50) 300) #f)
- 	      (make-test '(find (vector) 30) #f)
- 	      (make-test '(find (vector "sunny" "jenny" "crystel") "jenny" 0 equal?) 1)
- 	      (make-test '(find (vector "sunny" "jenny" "crystel" "kenny") "crystel" 1 equal?) 2)
- 	      (make-test '(find (vector "sunny" "jenny" "crystel" "kenny") "sam" 1 equal?) #f)
- 	      (make-test '(find (vector) "sam" 1 equal?) #f)
- 	      (make-test '(find (vector "sam") "sam" 0 equal?) 0)
-	      (make-test '(find "hello" #\e) 1)
-	      (make-test '(find 'something 'a) 'error))
+	      (make-test '(find (list "sam") "sam" 1 equal?) #f))
 	     verbose)
 
 (sunit-tests "(rfind)"
@@ -92,22 +65,7 @@
  	      (make-test '(rfind (list "sunny" "jenny" "crystel" "kenny") "sam" 1 equal?) #f)
  	      (make-test '(rfind (list) "sam") #f)
 	      (make-test '(rfind (list "sam") "sam" 0 equal?) 0)
-	      (make-test '(rfind (list "sam") "sam" 1 equal?) #f)
-	      (make-test '(rfind (vector 10 20 30 100 50) 30) 2)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 30 2) 2)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 30 5) #f)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 100) 3)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 10) 0)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 50) 4)
- 	      (make-test '(rfind (vector 10 20 30 100 50) 300) #f)
- 	      (make-test '(rfind (vector) 30) #f)
- 	      (make-test '(rfind (vector "sunny" "jenny" "crystel") "jenny" 0 equal?) 1)
- 	      (make-test '(rfind (vector "sunny" "jenny" "crystel" "kenny") "crystel" 1 equal?) 2)
- 	      (make-test '(rfind (vector "sunny" "jenny" "crystel" "kenny") "sam" 1 equal?) #f)
- 	      (make-test '(rfind (vector) "sam" 1 equal?) #f)
- 	      (make-test '(rfind (vector "sam") "sam" 0 equal?) 0)
-	      (make-test '(rfind "hello" #\e) 1)
-	      (make-test '(rfind 'something 'a) 'error))
+	      (make-test '(rfind (list "sam") "sam" 1 equal?) #f))
 	     verbose)
 
 (sunit-tests "(find-all)"
@@ -124,9 +82,7 @@
 (sunit-tests "(empty?)"
 	     (list
 	      (make-test '(empty? (list 10 20 30 100 50)) #f)
-	      (make-test '(empty? (list)) #t)
-	      (make-test '(empty? (vector 10 20 30 100 50)) #f)
-	      (make-test '(empty? (vector)) #t))
+	      (make-test '(empty? (list)) #t))
 	     verbose)
 
 (sunit-tests "(some?)"
@@ -143,9 +99,7 @@
 (sunit-tests "(sort)"
 	     (list 
 	      (make-test '(sort (list 20 30 10 100 50)) (list 10 20 30 50 100))
-	      (make-test '(sort (list "abc" "zzse" "aaa" "qas") string<?) (list "aaa" "abc" "qas" "zzse"))
-	      (make-test '(sort (vector 20 30 10 100 50)) (vector 10 20 30 50 100))
-	      (make-test '(sort (vector "abc" "zzse" "aaa" "qas") string<?) (vector "aaa" "abc" "qas" "zzse")))
+	      (make-test '(sort (list "abc" "zzse" "aaa" "qas") string<?) (list "aaa" "abc" "qas" "zzse")))
 	     verbose)
 
 (define (f x)
@@ -155,18 +109,14 @@
 
 (sunit-tests "(filter)"
 	     (list 
-	      (make-test '(filter '(20 30 40 100 10 50 100) f) '(20 30 40 10 50))
-	      (make-test '(filter (vector 20 30 40 100 10 50 100) f) (vector 20 30 40 10 50)))
+	      (make-test '(filter '(20 30 40 100 10 50 100) f) '(20 30 40 10 50)))
 	     verbose)
 
 (sunit-tests "(unique)"
 	     (list
 	      (make-test '(unique '(10 20 30 20 100 4 5 20 5)) '(10 20 30 100 4 5))
 	      (make-test '(unique '("hello" "bye" "is" "bye" "true") string=?) '("hello" "bye" "is" "true"))
-	      (make-test '(unique '()) '())
-	      (make-test '(unique (vector 10 20 30 20 100 4 5 20 5)) (vector 10 20 30 100 4 5))
-	      (make-test '(unique (vector "hello" "bye" "is" "bye" "true") string=?) 
-			 (vector "hello" "bye" "is" "true")))
+	      (make-test '(unique '()) '()))
 	     #f)
 
 (sunit-tests "(unique?)"
@@ -175,11 +125,7 @@
 	      (make-test '(unique? '(10 20 30 100 4 5)) #t)
 	      (make-test '(unique? ()) #t)
 	      (make-test '(unique? '("hello" "bye" "is" "bye" "true") string=?) #f)
-	      (make-test '(unique? '("hello" "bye" "is" "true") string=?) #t)
-	      (make-test '(unique? (vector 10 20 30 20 100 4 5 20 5)) #f)
-	      (make-test '(unique? (vector 10 20 30 100 4 5)) #t)
-	      (make-test '(unique? (vector "hello" "bye" "is" "bye" "true") string=?) #f)
-	      (make-test '(unique? (vector "hello" "bye" "is" "true") string=?) #t))
+	      (make-test '(unique? '("hello" "bye" "is" "true") string=?) #t))
 	     #f)
 
 (sunit-tests "(drop)"
