@@ -1,4 +1,6 @@
-16-SEP-2009
+21-OCT-2009
 
+ * Try to integrate Psd and Spark
  * Compile and cache Fermion Embedded scripts.
+ * Portable continuations.
 
