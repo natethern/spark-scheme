@@ -76,9 +76,9 @@
 	      (list
 	       (make-test '(contains? (list 100 200 300 10) 200) #t)
 	       (make-test '(contains? (list 100 200 300 10) 20) #f)
-	       (make-test '(contains? "hello, world" #\w) #t)
-	       (make-test '(contains? #("sunny" "ellie" "johny") "ellie") #f)
-	       (make-test '(contains? #("sunny" "ellie" "johny") "ellie" equal?) #t))
+	       (make-test '(contains? "hello, world" #\w char=? string-ref string-length) #t)
+	       (make-test '(contains? #("sunny" "ellie" "johny") "elli" string=? vector-ref vector-length) #f)
+	       (make-test '(contains? #("sunny" "ellie" "johny") "ellie" string=? vector-ref vector-length) #t))
 	      "(string-ends-with?)"
 	      (list
 	       (make-test '(string-ends-with? "hello, world" "world") #t)

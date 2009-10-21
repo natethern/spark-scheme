@@ -50,44 +50,21 @@
 	;; Tests if a container contains the value v.
 	;; The default comparison predicate is eq?.
 	;; The optional funcs can contain three procedures
-	;; which are the user-defined equivalents for eq?, 
+	;; which are the user-defined equivalents for eq?,
 	;; list-ref and length. These can be avoided if
 	;; self is a list, a vector or a string.
-	(define (contains? self v . funcs)
-	  (let* ((p eq?) 
-		 (ref null) 
-		 (lf null)
-		 (len 0) (i 0)
-		 (found #f))
-	    (cond
-	     ((list? self)
-	      (set! ref list-ref)
-	      (set! lf length))
-	     ((vector? self)
-	      (set! ref vector-ref)
-	      (set! lf vector-length))
-	     ((string? self)
-	      (set! ref string-ref)
-	      (set! lf string-length)))
-	    (if (not (null? funcs))
-		(begin
-		  (set! p (car funcs))
-		  (set! funcs (cdr funcs))))
-	    (if (not (null? funcs))
-		(begin
-		  (set! ref (car funcs))
-		  (set! funcs (cdr funcs))))
-	    (if (not (null? funcs))
-		(set! lf (car funcs)))
-	    (set! len (lf self))
-	    (let loop ()
-	      (if (and (< i len)
-		       (not found))
-		  (begin
-		    (set! found (p (ref self i) v))
-		    (set! i (add1 i))
-		    (loop))))
-	    found))
+	(define contains?
+	  (case-lambda
+	   ((self v) (contains? self v eq? list-ref length))
+	   ((self v comp-p) (contains? self v comp-p list-ref length))
+	   ((self v comp-p ref-f) (contains? self v comp-p ref-f length))
+	   ((self v comp-p ref-f len-f)
+	    (let ((len (len-f self)) (found #f))
+	      (let loop ((i 0))
+		(when (< i len)
+		      (set! found (comp-p (ref-f self i) v))
+		      (when (not found) (loop (add1 i)))))
+	      found))))
 
 	;; Parses an arguments list into a hashtable of
 	;; keyword-arguments. The keywords should be symbols.
