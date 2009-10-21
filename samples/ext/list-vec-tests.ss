@@ -110,12 +110,34 @@
 	      (make-test '(rfind 'something 'a) 'error))
 	     verbose)
 
+(sunit-tests "(find-all)"
+	     (list
+	      (make-test '(find-all (list 10 20 30 40 50) (lambda (x) (>= x 20))) (list 20 30 40 50))
+	      (make-test '(find-all (list 10 20 30 40 50) (lambda (x) (>= x 200))) ())
+	      (make-test '(find-all () (lambda (x) (>= x 200))) ())
+	      (make-test '(find-all (list 1 2 3 4) (lambda (x) (= x 1))) (list 1))
+	      (make-test '(find-all (list 1 2 3 4) (lambda (x) (= x 4))) (list 4))
+	      (make-test '(find-all (list "a" "b" "c" "d") (lambda (x) (or (string=? x "a") (string=? x "c"))))
+			 (list "a" "c")))
+	     verbose)
+
 (sunit-tests "(empty?)"
 	     (list
 	      (make-test '(empty? (list 10 20 30 100 50)) #f)
 	      (make-test '(empty? (list)) #t)
 	      (make-test '(empty? (vector 10 20 30 100 50)) #f)
 	      (make-test '(empty? (vector)) #t))
+	     verbose)
+
+(sunit-tests "(some?)"
+	     (list
+	      (make-test '(some? (list 10 20 30 40 50) (lambda (x) (>= x 20))) #t)
+	      (make-test '(some? (list 10 20 30 40 50) (lambda (x) (>= x 200))) #f)
+	      (make-test '(some? () (lambda (x) (>= x 200))) #f)
+	      (make-test '(some? (list 1 2 3 4) (lambda (x) (= x 1))) #t)
+	      (make-test '(some? (list 1 2 3 4) (lambda (x) (= x 4))) #t)
+	      (make-test '(some? (list "a" "b" "c" "d") (lambda (x) (or (string=? x "a") (string=? x "c"))))
+			 #t))
 	     verbose)
 
 (sunit-tests "(sort)"

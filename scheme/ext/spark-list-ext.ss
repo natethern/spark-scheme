@@ -213,6 +213,22 @@
 			  (loop (cdr e)))))
 		  #t))
 
+	(define (find-all self predic)
+	  (let loop ((tmp self) (res ()))
+	    (if (not (null? tmp))
+		(let ((v (car tmp)))
+		  (if (predic v)
+		      (loop (cdr tmp) (cons v res))
+		      (loop (cdr tmp) res)))
+		(reverse res))))
+	
+	(define (some? self predic)
+	  (let loop ((tmp self) (res #f))
+	    (if (and (not (null? tmp))
+		     (not res))
+		(loop (cdr tmp) (predic (car tmp)))
+		res)))
+
 	(set! list-flatten 
 	      (lambda (lst)
 		(if (not (null? lst))
@@ -272,4 +288,4 @@
 		 sort merge-sorted empty?
 		 find-if filter unique
 		 unique? drop take
-		 every?))
+		 every? some? find-all))
