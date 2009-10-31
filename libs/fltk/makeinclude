@@ -73,7 +73,7 @@ IMGDSONAME	=
 DSOCOMMAND	= echo
 
 # libraries to link with:
-AUDIOLIBS	= -lasound
+AUDIOLIBS	= 
 DSOFLAGS	= -L.  
 LDFLAGS		= $(OPTIM)  
 LDLIBS		= -lpthread -ldl -lm  -lXext -lX11 

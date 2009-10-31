@@ -97,8 +97,8 @@ spark_expat.o: spark_expat.cpp ../include/spark.h \
   /usr/include/errno.h /usr/include/bits/errno.h \
   /usr/include/linux/errno.h /usr/include/asm/errno.h \
   /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
-  ../include/spark_expat.h /usr/local/include/expat.h \
-  /usr/local/include/expat_external.h
+  ../include/spark_expat.h /usr/include/expat.h \
+  /usr/include/expat_external.h
 
 ../include/spark.h:
 
@@ -392,6 +392,6 @@ spark_expat.o: spark_expat.cpp ../include/spark.h \
 
 ../include/spark_expat.h:
 
-/usr/local/include/expat.h:
+/usr/include/expat.h:
 
-/usr/local/include/expat_external.h:
+/usr/include/expat_external.h:

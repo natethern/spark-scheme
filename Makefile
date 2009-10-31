@@ -61,7 +61,7 @@ AMTAR = ${SHELL} /home/vijay/Projects/spark-scheme/missing --run tar
 AUTOCONF = ${SHELL} /home/vijay/Projects/spark-scheme/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/vijay/Projects/spark-scheme/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/vijay/Projects/spark-scheme/missing --run automake-1.10
-AWK = mawk
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2

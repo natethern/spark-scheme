@@ -22,11 +22,8 @@ shell.o: shell.c /usr/include/stdlib.h /usr/include/features.h \
   /usr/include/bits/sigthread.h /usr/include/pwd.h /usr/include/unistd.h \
   /usr/include/bits/posix_opt.h /usr/include/bits/confname.h \
   /usr/include/getopt.h /usr/include/bits/unistd.h \
-  /usr/include/readline/readline.h /usr/include/readline/rlstdc.h \
-  /usr/include/readline/rltypedefs.h /usr/include/readline/keymaps.h \
-  /usr/include/readline/chardefs.h /usr/include/readline/tilde.h \
-  /usr/include/readline/history.h /usr/include/sys/time.h \
-  /usr/include/sys/resource.h /usr/include/bits/resource.h
+  /usr/include/sys/time.h /usr/include/sys/resource.h \
+  /usr/include/bits/resource.h
 
 /usr/include/stdlib.h:
 
@@ -129,20 +126,6 @@ sqlite3.h:
 /usr/include/getopt.h:
 
 /usr/include/bits/unistd.h:
-
-/usr/include/readline/readline.h:
-
-/usr/include/readline/rlstdc.h:
-
-/usr/include/readline/rltypedefs.h:
-
-/usr/include/readline/keymaps.h:
-
-/usr/include/readline/chardefs.h:
-
-/usr/include/readline/tilde.h:
-
-/usr/include/readline/history.h:
 
 /usr/include/sys/time.h:
 

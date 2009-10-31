@@ -167,6 +167,8 @@
 		      (loop (cdr tmp) res)))
 		(reverse res))))
 	
+        ;; Checks if predic evaluates to #t when applied
+        ;; for at least one of the elements in self.
 	(define (some? self predic)
 	  (let loop ((tmp self) (res #f))
 	    (if (and (not (null? tmp))

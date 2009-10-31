@@ -102,8 +102,8 @@ spark.o: spark.cpp /usr/include/unistd.h /usr/include/features.h \
   ../include/spark_modules.h ../include/spark_socket.h \
   ../include/spark_sysinfo.h ../include/spark_select.h \
   ../include/spark_sqlite.h ../libs/sqlite/sqlite3.h \
-  ../include/spark_expat.h /usr/local/include/expat.h \
-  /usr/local/include/expat_external.h ../include/spark_fltk.h \
+  ../include/spark_expat.h /usr/include/expat.h \
+  /usr/include/expat_external.h ../include/spark_fltk.h \
   ../include/spark.h ../include/spark_curl.h ../include/spark_opengl.h \
   ../include/spark_fcgi.h /usr/include/c++/4.3/queue \
   /usr/include/c++/4.3/deque /usr/include/c++/4.3/bits/stl_deque.h \
@@ -426,9 +426,9 @@ spark.o: spark.cpp /usr/include/unistd.h /usr/include/features.h \
 
 ../include/spark_expat.h:
 
-/usr/local/include/expat.h:
+/usr/include/expat.h:
 
-/usr/local/include/expat_external.h:
+/usr/include/expat_external.h:
 
 ../include/spark_fltk.h:
 

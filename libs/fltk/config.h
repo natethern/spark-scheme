@@ -262,7 +262,7 @@
  * Do we have the ALSA library?
  */
 
-#define HAVE_ALSA_ASOUNDLIB_H 1
+/* #undef HAVE_ALSA_ASOUNDLIB_H */
 
 /*
  * Do we have the long long type?

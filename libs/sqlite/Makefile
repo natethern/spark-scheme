@@ -105,7 +105,7 @@ AR = ar
 AUTOCONF = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run automake-1.9
-AWK = mawk
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
@@ -116,7 +116,7 @@ CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"sqlite\" -DPACKAGE_TARNAME=\"sqlite\" -DPACKAGE_VERSION=\"3.5.9\" -DPACKAGE_STRING=\"sqlite\ 3.5.9\" -DPACKAGE_BUGREPORT=\"http://www.sqlite.org\" -DPACKAGE=\"sqlite\" -DVERSION=\"3.5.9\" -D_FILE_OFFSET_BITS=64 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DHAVE_FDATASYNC=1 -DHAVE_USLEEP=1 -DHAVE_LOCALTIME_R=1 -DHAVE_GMTIME_R=1 -DHAVE_READLINE=1
+DEFS = -DPACKAGE_NAME=\"sqlite\" -DPACKAGE_TARNAME=\"sqlite\" -DPACKAGE_VERSION=\"3.5.9\" -DPACKAGE_STRING=\"sqlite\ 3.5.9\" -DPACKAGE_BUGREPORT=\"http://www.sqlite.org\" -DPACKAGE=\"sqlite\" -DVERSION=\"3.5.9\" -D_FILE_OFFSET_BITS=64 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DHAVE_FDATASYNC=1 -DHAVE_USLEEP=1 -DHAVE_LOCALTIME_R=1 -DHAVE_GMTIME_R=1
 DEPDIR = .deps
 DYNAMIC_EXTENSION_FLAGS = 
 ECHO = echo
@@ -148,7 +148,7 @@ PACKAGE_TARNAME = sqlite
 PACKAGE_VERSION = 3.5.9
 PATH_SEPARATOR = :
 RANLIB = ranlib
-READLINE_LIBS = -lreadline -lcurses 
+READLINE_LIBS = 
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
@@ -207,7 +207,7 @@ lib_LTLIBRARIES = libsqlite3.la
 libsqlite3_la_SOURCES = sqlite3.c
 libsqlite3_la_LDFLAGS = -no-undefined -version-info 8:6:8
 sqlite3_SOURCES = shell.c sqlite3.h
-sqlite3_LDADD = $(top_builddir)/libsqlite3.la -lreadline -lcurses 
+sqlite3_LDADD = $(top_builddir)/libsqlite3.la 
 sqlite3_DEPENDENCIES = $(top_builddir)/libsqlite3.la
 include_HEADERS = sqlite3.h sqlite3ext.h
 all: all-am

@@ -28,8 +28,8 @@ spark_curl.o: spark_curl.cpp /usr/include/c++/4.3/vector \
   /usr/include/c++/4.3/bits/stl_uninitialized.h \
   /usr/include/c++/4.3/bits/stl_vector.h \
   /usr/include/c++/4.3/bits/stl_bvector.h \
-  /usr/include/c++/4.3/bits/vector.tcc /usr/local/include/curl/curl.h \
-  /usr/local/include/curl/curlver.h /usr/include/stdio.h \
+  /usr/include/c++/4.3/bits/vector.tcc /usr/include/curl/curl.h \
+  /usr/include/curl/curlver.h /usr/include/stdio.h \
   /usr/include/bits/types.h /usr/include/bits/typesizes.h \
   /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
   /usr/lib/gcc/i486-linux-gnu/4.3.3/include/stdarg.h \
@@ -49,9 +49,9 @@ spark_curl.o: spark_curl.cpp /usr/include/c++/4.3/vector \
   /usr/include/bits/uio.h /usr/include/bits/socket.h \
   /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
   /usr/include/asm/sockios.h /usr/include/bits/socket2.h \
-  /usr/include/sys/time.h /usr/local/include/curl/easy.h \
-  /usr/local/include/curl/multi.h /usr/local/include/curl/curl.h \
-  ../include/spark.h ../libs/mzs/src/mzscheme/include/scheme.h \
+  /usr/include/sys/time.h /usr/include/curl/easy.h \
+  /usr/include/curl/multi.h /usr/include/curl/curl.h ../include/spark.h \
+  ../libs/mzs/src/mzscheme/include/scheme.h \
   ../libs/mzs/src/mzscheme/include/../sconfig.h \
   ../libs/mzs/src/mzscheme/include/../mzconfig.h \
   ../libs/mzs/src/mzscheme/include/../uconfig.h \
@@ -179,9 +179,9 @@ spark_curl.o: spark_curl.cpp /usr/include/c++/4.3/vector \
 
 /usr/include/c++/4.3/bits/vector.tcc:
 
-/usr/local/include/curl/curl.h:
+/usr/include/curl/curl.h:
 
-/usr/local/include/curl/curlver.h:
+/usr/include/curl/curlver.h:
 
 /usr/include/stdio.h:
 
@@ -263,11 +263,11 @@ spark_curl.o: spark_curl.cpp /usr/include/c++/4.3/vector \
 
 /usr/include/sys/time.h:
 
-/usr/local/include/curl/easy.h:
+/usr/include/curl/easy.h:
 
-/usr/local/include/curl/multi.h:
+/usr/include/curl/multi.h:
 
-/usr/local/include/curl/curl.h:
+/usr/include/curl/curl.h:
 
 ../include/spark.h:
 
