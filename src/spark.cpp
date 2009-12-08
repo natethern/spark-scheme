@@ -1,5 +1,5 @@
 // Spark - A programming environment built on top of MzScheme.
-// Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal
+// Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -342,7 +342,7 @@ void
 _print_version()
 {
   std::cout << "Spark " << spark::get_version() << '\n'
-	    << "Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal\n"
+	    << "Copyright (C) 2007-2010 Vijay Mathew Pandyalakal\n"
 	    << "This is free software.  You may redistribute copies of it under the terms of\n"
 	    << "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 	    << "There is NO WARRANTY, to the extent permitted by law."
@@ -365,7 +365,7 @@ _print_credits()
 void
 _print_copyright()
 {
-  std::cout << "Spark, Copyright (c) 2007, 2008, 2009 Vijay Mathew Pandyalakal. \n\n"
+  std::cout << "Spark, Copyright (c) 2007-2010 Vijay Mathew Pandyalakal. \n\n"
 	    << "MzScheme v371 [3m], Copyright (c) 2004-2007 PLT Scheme Inc. \n\n"
 	    << "Expat, Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd and Clark Cooper. \n"
 	    << "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 Expat maintainers. \n\n"
@@ -379,7 +379,7 @@ _print_license()
 {
 
   std::cout << "Spark is an advanced Scheme programming system. \n"
-	    << "Copyright (C) 2007, 2008, 2009 Vijay Mathew Pandyalakal. \n\n"
+	    << "Copyright (C) 2007-2010 Vijay Mathew Pandyalakal. \n\n"
 	    << "This program is free software: you can redistribute it and/or modify \n"
 	    << "it under the terms of the GNU General Public License as published by \n"
 	    << "the Free Software Foundation, either version 3 of the License, or \n"

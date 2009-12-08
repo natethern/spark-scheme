@@ -1,7 +1,7 @@
 (import (net))
 
 (define client-socket (socket))
-(define host-address (address "127.0.0.1" 8080))
+(define host-address (address "127.0.0.1" 8090))
 
 (socket-open client-socket)
 (socket-connect client-socket host-address)

@@ -1,5 +1,5 @@
 // Low-level interface to FastCGI.
-// Copyright (C) 2007, 2008 Vijay Mathew Pandyalakal
+// Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 /*
  * The FastCGI Classes.
- * Copyright (c) 2001-2007 Peter Simons <simons@cryp.to>
+ * Copyright (c) 2001-2010 Peter Simons <simons@cryp.to>
  *
  * This software is provided 'as-is', without any express or
  * implied warranty. In no event will the authors be held liable

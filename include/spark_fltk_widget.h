@@ -1,5 +1,5 @@
 // The generic widget functions.
-// Copyright (C) 2008  Vijay Mathew Pandyalakal
+// Copyright (C) 2007-2010  Vijay Mathew Pandyalakal
  
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
