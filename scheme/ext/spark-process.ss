@@ -1,4 +1,4 @@
-;; An Erlang like process system.
+;; Communicating Sequential Processes.
 ;; Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,11 @@
 		  watch alive? kill
 		  remoting-port
 		  remoting! remoting?
-		  descriptor message-channel)
-	 
+		  descriptor message-channel
+                  max-process-count max-process-count!)
+
+         ; Number of simultaneous processes.
+	 (define *max-proc-count* 20000)
 	 (define process-id 0)
 	 (define sem (make-semaphore 1))
 	 (define-struct proc-s (thread-desc channel))
@@ -37,6 +40,9 @@
 	 (define name-registry (make-hash-table 'equal))
 	 (define watchers (make-hash-table))
 	 (define remoting-port 1383)
+
+         (define (max-process-count) *max-proc-count*)
+         (define (max-process-count! c) (set! *max-proc-count* c))
 
 	 ;; Spawns a process and returns the process id.
 	 ;; The argument is a callback function to the process.
@@ -46,6 +52,8 @@
 	   (case-lambda 
 	    ((callback) (spawn callback ()))
 	    ((callback args)
+             (if (> process-id *max-proc-count*)
+                 (set! process-id 0))
 	     (let ((pid 0) (channel null))		
 
 	     ;; Modifies the package global state.
