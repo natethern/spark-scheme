@@ -176,6 +176,33 @@
 		(loop (cdr tmp) (predic (car tmp)))
 		res)))
 
+        ;; Replaces all instances of a with b in self.  Uses cmpr to 
+        ;; compare each element in self with a.  cmpr defaults to eq?.
+        (define replace-all
+          (case-lambda
+           ((self a b) (replace-helper self a b eq? #t))
+           ((self a b cmpr) (replace-helper self a b cmpr #t))))
+
+        ;; Replaces the first instance of a with b in self.  Uses cmpr to 
+        ;; compare each element in self with a.  cmpr defaults to eq?
+        (define replace
+          (case-lambda
+           ((self a b) (replace-helper self a b eq? #f))
+           ((self a b cmpr) (replace-helper self a b cmpr #f))))
+
+        (define (replace-helper self a b cmpr all?)
+          (let loop ((s self) (replaced 0) (result ()))	
+            (if (not (null? s))
+                (let ((c (car s)))
+                  (if (cmpr a c)
+                      (if all?
+                          (loop (cdr s) (add1 replaced) (cons b result))
+                          (if (= replaced 0)
+                              (loop (cdr s) (add1 replaced) (cons b result))
+                              (loop (cdr s) replaced (cons c result))))
+                      (loop (cdr s) replaced (cons c result))))
+                (reverse result))))
+
 	(set! list-remove-if
 	      (lambda (v p . rev)
 		(let ((ret (list)) (c null))
@@ -195,5 +222,6 @@
 		 remove-if remove-if-not remove
 		 sort merge-sorted empty?
 		 find-if filter unique
-		 unique? drop take
+		 unique? drop take 
+                 replace replace-all
 		 every? some? find-all))
