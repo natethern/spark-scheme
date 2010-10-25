@@ -111,6 +111,8 @@
 	     (assert test-expr expected-res verbose ()))
 	    ((test-expr expected-res verbose cmpr)
 	     (let ((test (make-test test-expr expected-res)))
-	       (if (not (sunit-test test  verbose cmpr))
+	       (if (not (sunit-test test verbose cmpr))
 		   (raise 'assert-failed)
 		   #t))))))
+
+

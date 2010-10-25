@@ -23,7 +23,7 @@
 	 (require (lib "async-channel.ss"))
 	 (require (lib "thread.ss"))
 	 
-	 (provide spawn send receive
+	 (provide spawn send receive try-receive
 		  register unregister 
 		  watch alive? kill
 		  remoting-port
@@ -97,6 +97,11 @@
 	 ;; Recieives a message on the process message channel.
 	 (define (receive pid)
 	   (async-channel-get (proc-s-channel (hash-table-get processes pid))))
+
+         ;; Tries to get a message from the process. Returns #f is the
+         ;; message queue is empty.
+         (define (try-receive pid)
+           (async-channel-try-get (proc-s-channel (hash-table-get processes pid))))
 
 	 ;; Registers a name for the process.
 	 ;; The process can be later identified using

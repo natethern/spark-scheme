@@ -2,7 +2,7 @@
 	(http)
 	(http-response))
 	
-(define httpd (web-server (list 'port 8080
+(define httpd (web-server (list 'port 8000
 				'session-timeout (* 2 60))))
 
 ;; This is a 'before-handle-request hook
