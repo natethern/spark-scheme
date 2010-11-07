@@ -22,6 +22,24 @@
 
 	(require (prefix l:: (lib "list.ss")))
 
+        (define foldl
+          (case-lambda 
+           ((self fn res)
+            (if (null? self) 
+                res
+                (foldl (cdr self) fn (fn (car self) res))))
+           ((self fn)
+            (if (number? (car self))
+                (foldl self fn 0)
+                (foldl self fn null)))))
+
+        (define foldr
+          (case-lambda
+           ((self fn init-val)
+            (foldl (reverse self) fn init-val))
+           ((self fn)
+            (foldl (reverse self) fn))))
+        
 	(define (flatten lst)
 	  (if (not (null? lst))
 	      (let loop ((args lst) (ret (list)))
@@ -218,7 +236,7 @@
 			  (loop))))
 		  ret)))
 
-	(provide flatten find rfind
+	(provide foldl foldr flatten find rfind
 		 remove-if remove-if-not remove
 		 sort merge-sorted empty?
 		 find-if filter unique
