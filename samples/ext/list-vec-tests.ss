@@ -2,6 +2,19 @@
 
 (define verbose #f)
 
+(define (length-using-foldn lst)
+  (foldl (replace-all lst null 1 (lambda (x y) #t)) +))
+
+(sunit-tests "(foldl)"
+	     (list 
+	      (make-test '(foldl (list 1 2 3 4 5) +) 15)
+	      (make-test '(foldl (list 1 2 3 4 5) + 10) 25)
+	      (make-test '(foldl (list 1 2 3 4 5) cons ()) (list 5 4 3 2 1))
+	      (make-test '(foldr (list 1 2 3 4 5) cons ()) (list 1 2 3 4 5))
+	      (make-test '(foldl (list 1 2 3 4 5) cons ()) (list 5 4 3 2 1))
+	      (make-test '(length-using-foldn (list 'a 'b 'c)) 3))
+	     verbose)
+
 (sunit-tests "(flatten)"
 	     (list 
 	      (make-test '(flatten (list 1 2 (list 3 4))) (list 1 2 3 4))
