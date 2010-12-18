@@ -5,6 +5,31 @@
 
 (define rgb airglow-rgb-color)
 (define *fill-color* null)
+(define mouse-x 0)
+(define mouse-y 0)
+(define p-mouse-x 0)
+(define p-mouse-y 0)
+(define *full-redraw* #f)
+(define *redraw-w* 0)
+(define *redraw-h* 0)
+
+;; event handlers
+(define *mouse-pressed* null)
+(define *mouse-released* null)
+(define *key-pressed* null)
+(define *key-released* null)
+
+(define (full-redraw)
+  (set! *full-redraw* #t))
+
+(define (no-full-redraw)
+  (set! *full-redraw* #f))
+
+(define (redraw-w w)
+  (set! *redraw-w* w))
+
+(define (redraw-h h)
+  (set! *redraw-h* h))
 
 (define (fill color)
   (set! *fill-color* color))
@@ -63,6 +88,33 @@
         (graphics-draw-rectf x y w h)
         (graphics-unclip)))
 
+(define (invoke-event-handlers widget event)
+  (when (and (eq? event 'mouse-push) 
+             (procedure? *mouse-pressed*))
+        (*mouse-pressed*))
+  (when (and (eq? event 'mouse-release)
+             (procedure? *mouse-released*))
+        (*mouse-released*))
+  (when (and (eq? event 'key-down) 
+             (procedure? *key-pressed*))
+        (*key-pressed*))
+  (when (and (eq? event 'key-up)
+             (procedure? *key-released*))
+        (*key-released*)))
+
+(define (event-handler widget event user-arg)
+  (set! p-mouse-x mouse-x)
+  (set! p-mouse-y mouse-y)
+  (set! mouse-x (event-x))
+  (set! mouse-y (event-y))
+  (invoke-event-handlers widget event)
+  (if (or (not (= p-mouse-x mouse-x))
+          (not (= p-mouse-y mouse-y)))
+      (if *full-redraw*
+          (widget-redraw widget)
+          (widget-damage! widget 16 mouse-x mouse-y
+                          *redraw-w* *redraw-h*))))
+
 (define (show-gui title x y w h draw-cb)
   (set! main-window (window 'x x 'y y
                             'w w 'h h 
@@ -71,7 +123,8 @@
   (set! canvas (widget 'x 0 'y 0 
                        'w w 'h h
                        'super 'widget
-                       'draw (lambda (self p) (draw-cb))))
+                       'draw (lambda (self p) (draw-cb))
+                       'events event-handler))
   
   (group-finish main-window)
   (window-show main-window)
@@ -93,4 +146,24 @@
         ((title x y w h)
          (show-gui title x y w h
                    (lambda () body ...))))))))
+
+(define-syntax mouse-pressed
+  (syntax-rules ()
+    ((_ body ...)
+     (set! *mouse-pressed* (lambda () body ...)))))
+
+(define-syntax mouse-released
+  (syntax-rules ()
+    ((_ body ...)
+     (set! *mouse-released* (lambda () body ...)))))
+
+(define-syntax key-pressed
+  (syntax-rules ()
+    ((_ body ...)
+     (set! *key-pressed* (lambda () body ...)))))
+
+(define-syntax key-released
+  (syntax-rules ()
+    ((_ body ...)
+     (set! *key-released* (lambda () body ...)))))
      

@@ -1,4 +1,4 @@
-(load "easy-graphics.ss")
+(load "../easy-graphics.ss")
 
 (define-display basic-shapes
   (background 'white)
@@ -17,7 +17,7 @@
   (rect 25 25 50 50))
 
 (define-display squares
-  (let ((a 100))
+  (with (a 100)
     (background 'white)
     (stroke 'black)
     (fill 'dark-red)
@@ -26,5 +26,5 @@
     (rect a a a a)))
 
 ;(basic-shapes)
-;(line-across-rect "Line/Rect" 100 100 100 100)
+;(line-across-rect "Line-Rect" 100 100 100 100)
 (squares "Squares" 100 100 200 200)
