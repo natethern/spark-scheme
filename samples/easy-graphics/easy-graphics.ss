@@ -13,6 +13,8 @@
 (define *redraw-w* 0)
 (define *redraw-h* 0)
 
+;; callbacks
+(define *draw* null)
 ;; event handlers
 (define *mouse-pressed* null)
 (define *mouse-released* null)
@@ -120,15 +122,27 @@
                             'w w 'h h 
                             'title title
                             'type 'double))
-  (set! canvas (widget 'x 0 'y 0 
-                       'w w 'h h
-                       'super 'widget
-                       'draw (lambda (self p) (draw-cb))
-                       'events event-handler))
+  (let ((draw-called #f))
+    (set! canvas (widget 'x 0 'y 0 
+                         'w w 'h h
+                         'super 'widget
+                         'draw (lambda (self p) 
+                                 (draw-cb)
+                                 (when (and (not (null? *draw*))
+                                            (eq? draw-called #f))
+                                       (set! draw-called #t)
+                                       (thread (lambda ()
+                                                 (let loop ()
+                                                   (*draw*)
+                                                   (widget-redraw self)
+                                                   (loop))))))
+                         'events event-handler)))
   
   (group-finish main-window)
   (window-show main-window)
-  (airglow-run))
+  (airglow-thread-manager-start)
+  (airglow-run)
+  (airglow-thread-manager-stop))
 
 (define-syntax define-display
   (syntax-rules ()
@@ -146,6 +160,11 @@
         ((title x y w h)
          (show-gui title x y w h
                    (lambda () body ...))))))))
+
+(define-syntax draw
+  (syntax-rules ()
+    ((_ body ...)
+     (set! *draw* (lambda () body ...)))))
 
 (define-syntax mouse-pressed
   (syntax-rules ()
