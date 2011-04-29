@@ -535,7 +535,7 @@ s,@STRIP@,strip,;t t
 s,@ac_ct_STRIP@,strip,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t
 s,@mkdir_p@,mkdir -p --,;t t
-s,@AWK@,gawk,;t t
+s,@AWK@,mawk,;t t
 s,@SET_MAKE@,,;t t
 s,@am__leading_dot@,.,;t t
 s,@AMTAR@,${SHELL} /home/vijay/Projects/spark-scheme/libs/mzs/src/foreign/gcc/missing --run tar,;t t
@@ -617,7 +617,7 @@ s,@HAVE_LONG_DOUBLE@,1,;t t
 s,@TARGET@,X86,;t t
 s,@TARGETDIR@,x86,;t t
 s,@toolexecdir@,$(libdir)/gcc-lib/$(target_alias),;t t
-s,@toolexeclibdir@,$(libdir)/../lib,;t t
+s,@toolexeclibdir@,$(libdir),;t t
 s,@LIBOBJS@,,;t t
 s,@LTLIBOBJS@,,;t t
 CEOF
@@ -957,8 +957,7 @@ ${ac_dA}HAVE_ALLOCA${ac_dB}HAVE_ALLOCA${ac_dC}1${ac_dD}
 ${ac_dA}SIZEOF_DOUBLE${ac_dB}SIZEOF_DOUBLE${ac_dC}8${ac_dD}
 ${ac_dA}SIZEOF_LONG_DOUBLE${ac_dB}SIZEOF_LONG_DOUBLE${ac_dC}12${ac_dD}
 ${ac_dA}HAVE_LONG_DOUBLE${ac_dB}HAVE_LONG_DOUBLE${ac_dC}1${ac_dD}
-${ac_dA}HAVE_RO_EH_FRAME${ac_dB}HAVE_RO_EH_FRAME${ac_dC}1${ac_dD}
-${ac_dA}EH_FRAME_FLAGS${ac_dB}EH_FRAME_FLAGS${ac_dC}"a"${ac_dD}
+${ac_dA}EH_FRAME_FLAGS${ac_dB}EH_FRAME_FLAGS${ac_dC}"aw"${ac_dD}
 ${ac_dA}HAVE_HIDDEN_VISIBILITY_ATTRIBUTE${ac_dB}HAVE_HIDDEN_VISIBILITY_ATTRIBUTE${ac_dC}1${ac_dD}
 CEOF
   sed -f $tmp/defines.sed $tmp/in >$tmp/out
@@ -1001,8 +1000,7 @@ ${ac_uA}HAVE_ALLOCA${ac_uB}HAVE_ALLOCA${ac_uC}1${ac_uD}
 ${ac_uA}SIZEOF_DOUBLE${ac_uB}SIZEOF_DOUBLE${ac_uC}8${ac_uD}
 ${ac_uA}SIZEOF_LONG_DOUBLE${ac_uB}SIZEOF_LONG_DOUBLE${ac_uC}12${ac_uD}
 ${ac_uA}HAVE_LONG_DOUBLE${ac_uB}HAVE_LONG_DOUBLE${ac_uC}1${ac_uD}
-${ac_uA}HAVE_RO_EH_FRAME${ac_uB}HAVE_RO_EH_FRAME${ac_uC}1${ac_uD}
-${ac_uA}EH_FRAME_FLAGS${ac_uB}EH_FRAME_FLAGS${ac_uC}"a"${ac_uD}
+${ac_uA}EH_FRAME_FLAGS${ac_uB}EH_FRAME_FLAGS${ac_uC}"aw"${ac_uD}
 ${ac_uA}HAVE_HIDDEN_VISIBILITY_ATTRIBUTE${ac_uB}HAVE_HIDDEN_VISIBILITY_ATTRIBUTE${ac_uC}1${ac_uD}
 s,^[	 ]*#[	 ]*undef[	 ][	 ]*[a-zA-Z_][a-zA-Z_0-9]*,/* & */,
 CEOF

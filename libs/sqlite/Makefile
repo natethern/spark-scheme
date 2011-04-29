@@ -105,7 +105,7 @@ AR = ar
 AUTOCONF = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/vijay/Projects/spark-scheme/libs/sqlite/missing --run automake-1.9
-AWK = gawk
+AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2

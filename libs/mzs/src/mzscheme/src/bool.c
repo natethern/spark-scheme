@@ -124,6 +124,12 @@ int scheme_eq (Scheme_Object *obj1, Scheme_Object *obj2)
   return SAME_OBJ(obj1, obj2);
 }
 
+/* For GCC 4.4 */
+#ifdef MZ_XFORM
+START_XFORM_SKIP;
+#endif 
+/* :~ */
+
 XFORM_NONGCING static MZ_INLINE int double_eqv(double a, double b)
 {
 # ifndef NAN_EQUALS_ANYTHING
@@ -198,6 +204,12 @@ int scheme_eqv (Scheme_Object *obj1, Scheme_Object *obj2)
   else
     return 0;
 }
+
+/* For GCC 4.4 */
+#ifdef MZ_XFORM
+END_XFORM_SKIP;
+#endif 
+/* :~ */
 
 static Scheme_Object *equal_k(void)
 {

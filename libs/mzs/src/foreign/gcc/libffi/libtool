@@ -37,7 +37,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host silentoutrage:
+# Libtool was configured as follows, on host vijay-Lenovo-IdeaPad-Y510:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-g -O2" CPPFLAGS="" \

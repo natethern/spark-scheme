@@ -205,7 +205,7 @@ ARM_TRUE = #
 AUTOCONF = ${SHELL} /home/vijay/Projects/spark-scheme/libs/mzs/src/foreign/gcc/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/vijay/Projects/spark-scheme/libs/mzs/src/foreign/gcc/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/vijay/Projects/spark-scheme/libs/mzs/src/foreign/gcc/missing --run automake-1.9
-AWK = gawk
+AWK = mawk
 CC = gcc
 CCAS = gcc
 CCASFLAGS = -g -O2
@@ -334,7 +334,7 @@ target_cpu = i686
 target_os = linux-gnu
 target_vendor = pc
 toolexecdir = $(libdir)/gcc-lib/$(target_alias)
-toolexeclibdir = $(libdir)/../lib
+toolexeclibdir = $(libdir)
 AUTOMAKE_OPTIONS = foreign subdir-objects
 ACLOCAL_AMFLAGS = -I ..
 # ELI: removed testsuite
