@@ -563,7 +563,7 @@ configure:20622: $? = 0
 configure:20640: result: yes
 configure:20560: checking for fullfsync
 configure:20616: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccaSwnrz.o: In function `main':
+/tmp/cc05EkhZ.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:58: undefined reference to `fullfsync'
 collect2: ld returned 1 exit status
 configure:20622: $? = 1
@@ -640,7 +640,7 @@ configure:20622: $? = 0
 configure:20640: result: yes
 configure:20667: checking for library containing tgetent
 configure:20708: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cchYUPxQ.o: In function `main':
+/tmp/ccjc8KKd.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:37: undefined reference to `tgetent'
 collect2: ld returned 1 exit status
 configure:20714: $? = 1
@@ -733,7 +733,7 @@ configure: failed program was:
 configure:20742: result: no
 configure:20750: checking for library containing readline
 configure:20791: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccHRVma5.o: In function `main':
+/tmp/cc7dXoAt.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:37: undefined reference to `readline'
 collect2: ld returned 1 exit status
 configure:20797: $? = 1
@@ -826,7 +826,7 @@ configure: failed program was:
 configure:20825: result: no
 configure:20839: checking for readline
 configure:20895: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cc59QXhk.o: In function `main':
+/tmp/ccJNCprF.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:60: undefined reference to `readline'
 collect2: ld returned 1 exit status
 configure:20901: $? = 1
@@ -897,7 +897,7 @@ configure: failed program was:
 configure:20919: result: no
 configure:20948: checking for library containing pthread_create
 configure:20989: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cc1UEInt.o: In function `main':
+/tmp/ccpyFzuO.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:37: undefined reference to `pthread_create'
 collect2: ld returned 1 exit status
 configure:20995: $? = 1
@@ -947,7 +947,7 @@ configure:20995: $? = 0
 configure:21023: result: -lpthread
 configure:21046: checking for library containing dlopen
 configure:21087: gcc -o conftest -g -O2   conftest.c -lpthread  >&5
-/tmp/ccTzzQvM.o: In function `main':
+/tmp/ccCVJgWW.o: In function `main':
 /home/vijay/Projects/spark-scheme/libs/sqlite/conftest.c:37: undefined reference to `dlopen'
 collect2: ld returned 1 exit status
 configure:21093: $? = 1

@@ -432,7 +432,7 @@ configure:6965: $? = 0
 configure:6983: result: yes
 configure:6903: checking for strlcat
 configure:6959: gcc -o conftest    conftest.c  >&5
-/tmp/cchfrpE8.o: In function `main':
+/tmp/ccc1Xcj0.o: In function `main':
 conftest.c:(.text+0x7): undefined reference to `strlcat'
 collect2: ld returned 1 exit status
 configure:6965: $? = 1
@@ -507,7 +507,7 @@ configure: failed program was:
 configure:6983: result: no
 configure:6903: checking for strlcpy
 configure:6959: gcc -o conftest    conftest.c  >&5
-/tmp/ccp8YSFj.o: In function `main':
+/tmp/ccAMyuY5.o: In function `main':
 conftest.c:(.text+0x7): undefined reference to `strlcpy'
 collect2: ld returned 1 exit status
 configure:6965: $? = 1
@@ -597,7 +597,7 @@ configure:7211: result: yes
 configure:7222: checking for library containing pow
 configure:7263: gcc -o conftest    conftest.c  >&5
 conftest.c:39:6: warning: conflicting types for built-in function 'pow'
-/tmp/cc9rECfP.o: In function `main':
+/tmp/ccPezWNl.o: In function `main':
 conftest.c:(.text+0x7): undefined reference to `pow'
 collect2: ld returned 1 exit status
 configure:7269: $? = 1
@@ -722,7 +722,7 @@ configure:7794: $? = 0
 configure:7811: result: yes
 configure:7821: checking for library containing dlsym
 configure:7862: gcc -o conftest    conftest.c -lm  >&5
-/tmp/ccieWafk.o: In function `main':
+/tmp/ccHGAjjQ.o: In function `main':
 conftest.c:(.text+0x7): undefined reference to `dlsym'
 collect2: ld returned 1 exit status
 configure:7868: $? = 1
@@ -1145,6 +1145,7 @@ config.status:664: creating fltk-config
 config.status:664: creating fltk.spec
 config.status:664: creating FL/Makefile
 config.status:664: creating config.h
+config.status:912: config.h is unchanged
 
 ## ---------------- ##
 ## Cache variables. ##
