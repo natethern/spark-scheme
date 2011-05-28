@@ -67,7 +67,7 @@
 					       null null null null 
 					       null null null null
 					       #f)))
-	     (if (not (eqv? args null))
+	     (if (not (null? args))
 		 (begin
 		   (let ((len (length args)) (tmp null) (rest ()))
 		     (if (> len 2)
@@ -77,7 +77,7 @@
 		     (if (>= len 1)
 			 (begin
 			   (set! tmp (car args))
-			   (if (not (eqv? tmp null))
+			   (if (not (null? tmp))
 			       (begin
 				 (if (not (socket? tmp))
 				     (raise-exception "socket-acceptor"
@@ -85,10 +85,10 @@
 						      null))))
 			   (set-socket-acceptor-s-server-socket! self tmp)
 			   (set! rest (cdr args))))
-		     (if (not (eqv? rest null))
+		     (if (not (null? rest))
 			 (begin
 			   (set! tmp (car rest))
-			   (if (not (eqv? tmp null))
+			   (if (not (null? tmp))
 			       (begin
 				 (if (not (address? tmp))
 				     (raise-exception "socket-acceptor"
@@ -118,11 +118,11 @@
 			     self))
 		 (reuse-addr #f)
 		 (timeout (list 0 0)))
-	     (if (eqv? r null)
+	     (if (null? r)
 		 (begin
 		   (set! r (reactor))
 		   (set-socket-acceptor-s-reactor! self r)))
-	     (if (not (eqv? args null))
+	     (if (not (null? args))
 		 (begin
 		   (if (> (length args) 2)
 		       (raise-exception "acceptor-open"
@@ -146,7 +146,7 @@
 	 ;; Runs the reactor.
 	 (define (acceptor-watch self)
 	   (let ((r (socket-acceptor-s-reactor self)))
-	     (if (eqv? r null)
+	     (if (null? r)
 		 (raise-exception "acceptor-watch"
 				  "Null reactor."
 				  null))
@@ -155,7 +155,7 @@
 	 ;; Closes the server socket. Releases the reactor.
 	 (define (acceptor-close self)
 	   (let ((server-socket (socket-acceptor-s-server-socket self)))
-	     (if (not (eqv? server-socket null))
+	     (if (not (null? server-socket))
 		 (begin
 		   (socket-close server-socket)
 		   (set-socket-acceptor-s-server-socket! self null)))
@@ -174,12 +174,12 @@
 		 (begin
 		   (let ((client-conn null))
 		     (set! client-conn (socket-accept server-socket))
-		     (if (not (eqv? on-client-connect null))
+		     (if (not (null? on-client-connect))
 			 (on-client-connect self client-conn))))
 		 (begin
 		   ;; for a client socket, we just call the on-client-read
 		   ;; callback.
-		   (if (not (eqv? on-client-read null))
+		   (if (not (null? on-client-read))
 		       (begin
 			 (let ((client-socket (socket handle)))
 			   (on-client-read self client-socket))))))))
@@ -193,11 +193,11 @@
 		 (on-client-write (socket-acceptor-s-on-client-write self)))
 	     (if (eqv? handle (socket-handle server-socket))
 		 (begin
-		   (if (not (eqv? on-server-write null))
+		   (if (not (null? on-server-write))
 		       (on-server-write self server-socket)))
 		 (begin
 		   (let ((socket-object (socket handle)))
-		     (if (not (eqv? on-client-write null))
+		     (if (not (null? on-client-write))
 			 (on-client-write self socket-object)))))))
 
 	 ;; The handler in the reactor will call this method on
@@ -209,11 +209,11 @@
 		 (on-client-error (socket-acceptor-s-on-client-error self)))
 	     (if (eqv? handle (socket-handle server-socket))
 		 (begin
-		   (if (not (eqv? on-server-error null))
+		   (if (not (null? on-server-error))
 		       (on-server-error self server-socket)))
 		 (begin
 		   (let ((socket-object (socket handle)))
-		     (if (not (eqv? on-client-error null))
+		     (if (not (null? on-client-error))
 			 (on-client-error self socket-object)))))))
 
 	 ;; The handler in the reactor will call this method on

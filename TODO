@@ -1,6 +1,7 @@
-21-OCT-2009
+28-May-2011
 
- * Try to integrate Psd and Spark
+ * Use epoll in the reactor framework.
+ * Automatic removal of expired client sockets.
  * Compile and cache Fermion Embedded scripts.
  * Portable continuations.
 
