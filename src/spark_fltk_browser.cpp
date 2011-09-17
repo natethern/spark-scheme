@@ -1,5 +1,5 @@
 //  MzScheme inetrface to the FLTK Browser widget.
-//  Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
+//  Copyright (C) 2007-2012 Vijay Mathew Pandyalakal
  
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //  with this program; If not, see <http://www.gnu.org/licenses/>.
   
 //  Please contact Vijay Mathew Pandyalakal, Thekkekara House, Thekkemala P.O
-//  Kozhenchery, Kerala 689654 India (Electronic mail: vijay.the.schemer@gmail.com)
+//  Kozhenchery, Kerala 689654 India (Electronic mail: mathew.vijay@gmail.com)
 //  if you need additional information or have any questions.
 
 #include <FL/Fl_Browser.H>

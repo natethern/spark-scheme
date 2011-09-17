@@ -13,7 +13,7 @@ Spark-Scheme is a dialect of Lisp, which gives you...
     * An SQL database engine and connectivity to third-party databases
     * A web server and a couple of web application frameworks
 
-Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
+Copyright (C) 2007-2012 Vijay Mathew Pandyalakal<mathew.vijay@gmail.com>
 
 Spark is distributed under GPLv3. See COPYING for more information.
 

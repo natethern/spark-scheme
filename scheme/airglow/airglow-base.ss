@@ -1,6 +1,6 @@
 ;; Functions common to all Widgets and objects derived from Group
 ;; and Global functions used for managing UI, events etc.
-;; Copyright (C) 2007-2010 Vijay Mathew Pandyalakal
+;; Copyright (C) 2007-2012 Vijay Mathew Pandyalakal
  
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
   
 ;; Please contact Vijay Mathew Pandyalakal if you need additional 
 ;; information or have any questions.
-;; (Electronic mail: vijay.the.schemer@gmail.com)
+;; (Electronic mail: mathew.vijay@gmail.com)
 
 (library airglow-base
 	

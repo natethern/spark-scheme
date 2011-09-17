@@ -16,7 +16,7 @@
 
 ;; Please contact Vijay Mathew Pandyalakal if you need additional 
 ;; information or have any questions.
-;; (Electronic mail: vijay.the.schemer@gmail.com)
+;; (Electronic mail: mathew.vijay@gmail.com)
 
 (library exception
 
