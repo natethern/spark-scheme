@@ -136,7 +136,7 @@ sproc.@LTO@: @GCDIR@/sproc.@LTO@
 # Unix ----------------------------------------
 
 mzscheme@CGC@@NOT_OSX@: libmzscheme.@LIBSFX@ libmzgc.@LIBSFX@ main.@LTO@ $(SPECIALIZINGOBJECTS)
-	@MZLINKER@ -o mzscheme@CGC@ main.@LTO@ $(SPECIALIZINGOBJECTS) libmzscheme.@LIBSFX@ libmzgc.@LIBSFX@ @LDFLAGS@ @LIBS@
+	@MZLINKER@ -o mzscheme@CGC@ main.@LTO@ $(SPECIALIZINGOBJECTS) libmzscheme.@LIBSFX@ libmzgc.@LIBSFX@ @LDFLAGS@ @LIBS@ -Wl,--allow-multiple-definition
 
 # Mac OS ----------------------------------------
 
